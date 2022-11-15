@@ -1,4 +1,4 @@
-# ApsaraLiveDemo 帮助文档
+# AUIInteractionLiveService 帮助文档
 
 <p align="center" class="flex justify-center">
     <a href="https://www.serverless-devs.com" class="ml-1">
@@ -14,7 +14,7 @@
 
 <description>
 
-> ***基于函数计算快速部署互动直播Demo***
+> ***基于函数计算快速部署互动直播Demo(ApsaraLiveDemo)***
 
 </description>
 
@@ -27,7 +27,7 @@
 | 服务/业务 | 函数计算 |     
 | --- |  --- |   
 | 权限/策略 | AliyunFCFullAccess |     
-| 权限/策略 | AliyunLiveReadOnlyAccess |     
+| 权限/策略 | AliyunLiveFullAccess |     
 
 </table>
 
