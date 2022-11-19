@@ -33,16 +33,6 @@ type CreateRequest struct {
 	Extends string `json:"extends" example:"扩展字段，通常是JSON格式字符串"`
 }
 
-type UpdateRequest struct {
-	Id string `json:"id" example:"uuid，可以是消息组id"`
-	// 直播标题
-	Title string `json:"title" example:"直播标题"`
-	// 直播公告
-	Notice string `json:"notice" example:"直播公告"`
-	// 扩展字段，通常是JSON格式字符串
-	Extends string `json:"extends" example:"扩展字段，通常是JSON格式字符串"`
-}
-
 // Create
 // @Summary 创建直播房间
 // @Description 创建直播房间
@@ -151,6 +141,16 @@ func (h *RoomHandler) Get(w http.ResponseWriter, r *http.Request) {
 	}
 
 	render.DefaultResponder(w, r, rst)
+}
+
+type UpdateRequest struct {
+	Id string `json:"id" example:"直播Id"`
+	// 直播标题
+	Title string `json:"title" example:"直播标题"`
+	// 直播公告
+	Notice string `json:"notice" example:"直播公告"`
+	// 扩展字段，通常是JSON格式字符串
+	Extends string `json:"extends" example:"扩展字段，通常是JSON格式字符串"`
 }
 
 // Update

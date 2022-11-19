@@ -172,6 +172,174 @@
                 }
             }
         },
+        "/getMeetingInfo": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "下麦",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "下麦",
+                "operationId": "ListMeetingMembers",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer your-token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handler.GetMeetingInfoRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "schema": {
+                            "$ref": "#/definitions/models.MeetingInfo"
+                        }
+                    },
+                    "400": {
+                        "description": "4xx, 客户端错误",
+                        "schema": {
+                            "$ref": "#/definitions/models.Status"
+                        }
+                    },
+                    "500": {
+                        "description": "5xx, 请求失败",
+                        "schema": {
+                            "$ref": "#/definitions/models.Status"
+                        }
+                    }
+                }
+            }
+        },
+        "/joinMeeting": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "连麦",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "连麦",
+                "operationId": "JoinMeeting",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer your-token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handler.MeetingActionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "schema": {
+                            "$ref": "#/definitions/models.MeetingInfo"
+                        }
+                    },
+                    "400": {
+                        "description": "4xx, 客户端错误",
+                        "schema": {
+                            "$ref": "#/definitions/models.Status"
+                        }
+                    },
+                    "500": {
+                        "description": "5xx, 请求失败",
+                        "schema": {
+                            "$ref": "#/definitions/models.Status"
+                        }
+                    }
+                }
+            }
+        },
+        "/leaveMeeting": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "下麦",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "下麦",
+                "operationId": "LeaveMeeting",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer your-token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handler.MeetingActionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "schema": {
+                            "$ref": "#/definitions/models.MeetingInfo"
+                        }
+                    },
+                    "400": {
+                        "description": "4xx, 客户端错误",
+                        "schema": {
+                            "$ref": "#/definitions/models.Status"
+                        }
+                    },
+                    "500": {
+                        "description": "5xx, 请求失败",
+                        "schema": {
+                            "$ref": "#/definitions/models.Status"
+                        }
+                    }
+                }
+            }
+        },
         "/list": {
             "post": {
                 "security": [
@@ -554,6 +722,62 @@
                     }
                 }
             }
+        },
+        "/updateMeeting": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "连麦",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "连麦",
+                "operationId": "UpdateMeeting",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer your-token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handler.MeetingActionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "schema": {
+                            "$ref": "#/definitions/models.MeetingInfo"
+                        }
+                    },
+                    "400": {
+                        "description": "4xx, 客户端错误",
+                        "schema": {
+                            "$ref": "#/definitions/models.Status"
+                        }
+                    },
+                    "500": {
+                        "description": "5xx, 请求失败",
+                        "schema": {
+                            "$ref": "#/definitions/models.Status"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -641,6 +865,15 @@
                 }
             }
         },
+        "handler.GetMeetingInfoRequest": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "example": "直播Id"
+                }
+            }
+        },
         "handler.GetRequest": {
             "type": "object",
             "required": [
@@ -696,6 +929,21 @@
                 }
             }
         },
+        "handler.MeetingActionRequest": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "example": "直播Id"
+                },
+                "members": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.MeetingMember"
+                    }
+                }
+            }
+        },
         "handler.TokenRequest": {
             "type": "object",
             "required": [
@@ -739,7 +987,7 @@
                 },
                 "id": {
                     "type": "string",
-                    "example": "uuid，可以是消息组id"
+                    "example": "直播Id"
                 },
                 "notice": {
                     "description": "直播公告",
@@ -787,6 +1035,46 @@
                 }
             }
         },
+        "models.MeetingInfo": {
+            "type": "object",
+            "properties": {
+                "members": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.MeetingMember"
+                    }
+                }
+            }
+        },
+        "models.MeetingMember": {
+            "type": "object",
+            "properties": {
+                "camera_opened": {
+                    "description": "摄像头状态",
+                    "type": "boolean"
+                },
+                "meeting_id": {
+                    "description": "会议(连麦)Id",
+                    "type": "string"
+                },
+                "mic_opened": {
+                    "description": "麦克风状态",
+                    "type": "boolean"
+                },
+                "user_avatar": {
+                    "description": "用户头像",
+                    "type": "string"
+                },
+                "user_id": {
+                    "description": "用户Id",
+                    "type": "string"
+                },
+                "user_nick": {
+                    "description": "用户Nick",
+                    "type": "string"
+                }
+            }
+        },
         "models.Metrics": {
             "type": "object",
             "properties": {
@@ -800,6 +1088,79 @@
                     "type": "integer"
                 },
                 "uv": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.PlayInfo": {
+            "type": "object",
+            "properties": {
+                "bit_depth": {
+                    "description": "颜色位深。取值为整数。",
+                    "type": "integer"
+                },
+                "bit_rate": {
+                    "description": "媒体流码率。单位：Kbps。",
+                    "type": "string"
+                },
+                "creation_time": {
+                    "description": "创建时间 音/视频创建时间。格式为：yyyy-MM-ddTHH:mm:ssZ（UTC时间）。",
+                    "type": "string"
+                },
+                "definition": {
+                    "description": "视频流清晰度定义。取值： FD：流畅。 LD：标清。 SD：高清。 HD：超清 OD：原画。 2K：2K。 4K：4K。 SQ：普通音质。 HQ：高音质。 AUTO：自适应码率。",
+                    "type": "string"
+                },
+                "duration": {
+                    "description": "媒体流长度。单位：秒。",
+                    "type": "string"
+                },
+                "encrypt": {
+                    "description": "媒体流是否加密流，取值：0：否。1 是。",
+                    "type": "integer"
+                },
+                "encrypt_type": {
+                    "description": "媒体流加密类型。取值: AliyunVoDEncryption：阿里云视频加密。AliyunVoDEncryption：阿里云视频加密。",
+                    "type": "string"
+                },
+                "format": {
+                    "description": "媒体流格式。 若媒体文件为视频则取值： mp4、 m3u8。",
+                    "type": "string"
+                },
+                "fps": {
+                    "description": "媒体流帧率。单位：帧/每秒。",
+                    "type": "string"
+                },
+                "hdr_type": {
+                    "description": "媒体流HDR类型。取值: HDR,HDR10,HLG,DolbyVision,HDRVivid,HDRVivid",
+                    "type": "string"
+                },
+                "height": {
+                    "description": "媒体流高度。单位：px。",
+                    "type": "integer"
+                },
+                "play_url": {
+                    "description": "媒体流宽度。单位：px。",
+                    "type": "string"
+                },
+                "size": {
+                    "description": "媒体流宽度。单位：px。",
+                    "type": "integer"
+                },
+                "status": {
+                    "description": "媒体流状态，Normal：正常状态，标记的是每种清晰度和格式的一路最新转码完成的流的状态。Invisible：不可见状态，当每种清晰度和格式有多路重复的转码流时，除了最新的一路流会被标记为正常状态，其他流会被标记为不可见状态。",
+                    "type": "string"
+                },
+                "stream_type": {
+                    "description": "媒体流类型。 若媒体流为视频则取值：video，若是纯音频则取值：audio。",
+                    "type": "string"
+                },
+                "watermark_id": {
+                    "description": "当前媒体流关联的水印ID。",
+                    "type": "string"
+                },
+                "width": {
+                    "description": "媒体流宽度。单位：px。",
                     "type": "integer"
                 }
             }
@@ -857,6 +1218,10 @@
                     "description": "连麦Id",
                     "type": "string"
                 },
+                "meeting_info": {
+                    "description": "连麦成员信息（json序列化）",
+                    "type": "string"
+                },
                 "metrics": {
                     "description": "直播间统计",
                     "$ref": "#/definitions/models.Metrics"
@@ -892,6 +1257,14 @@
                 "user_status": {
                     "description": "用户状态",
                     "$ref": "#/definitions/models.UserStatus"
+                },
+                "vod_id": {
+                    "description": "点播Id",
+                    "type": "string"
+                },
+                "vod_info": {
+                    "description": "直播转录制，点播信息",
+                    "$ref": "#/definitions/models.VodInfo"
                 }
             }
         },
@@ -918,6 +1291,21 @@
                     "items": {
                         "type": "string"
                     }
+                }
+            }
+        },
+        "models.VodInfo": {
+            "type": "object",
+            "properties": {
+                "playlist": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.PlayInfo"
+                    }
+                },
+                "status": {
+                    "description": "状态  0 准备中，1 成功，2 失败",
+                    "type": "integer"
                 }
             }
         }

@@ -41,7 +41,11 @@ func (l *LiveMic) RTCLinkPullUrl(channelId, userId string, expirationSeconds int
 // RTCLinkCDNUrl https://help.aliyun.com/document_detail/450515.html
 func (l *LiveMic) RTCLinkCDNUrl(channelId, userId string, schema, domain string, pullAuthKey string, expirationSeconds int64) *PullLiveInfo {
 	appId := l.AppId
-	streamName := fmt.Sprintf("%s_%s_%s_camera", appId, channelId, userId)
+	streamName := GetStreamName(appId, channelId, userId)
 
 	return AuthUrl(schema, domain, "live", streamName, pullAuthKey, expirationSeconds)
+}
+
+func GetStreamName(appId, channelId, userId string) string {
+	return fmt.Sprintf("%s_%s_%s_camera", appId, channelId, userId)
 }

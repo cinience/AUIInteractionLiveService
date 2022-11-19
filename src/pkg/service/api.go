@@ -13,7 +13,7 @@ type LiveRoomManagerAPI interface {
 
 	GetRoom(id, role string) (*models.RoomInfo, error)
 
-	UpdateRoom(id string, title, notice, extend string) (*models.RoomInfo, error)
+	UpdateRoom(id string, title, notice string, extend string) (*models.RoomInfo, error)
 
 	StartRoom(id string, role string) (*models.RoomInfo, error)
 
@@ -22,4 +22,12 @@ type LiveRoomManagerAPI interface {
 	StopRoom(id string, role string) (*models.RoomInfo, error)
 
 	DeleteRoom(id string) (*models.RoomInfo, error)
+
+	AddMeetingUser(id string, members []models.MeetingMember) (*models.MeetingInfo, error)
+
+	UpdateMeetingUser(id string, members []models.MeetingMember) (*models.MeetingInfo, error)
+
+	DelMeetingUser(id string, members []models.MeetingMember) (*models.MeetingInfo, error)
+
+	GetMeetingInfo(id string) (*models.MeetingInfo, error)
 }

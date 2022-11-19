@@ -68,14 +68,13 @@ func runServer() {
 			panic(err)
 		}
 		log.Printf("User %s as storage service...", appConfig.StorageConfig.Type)
-
 	}
 
 	lm := _default.NewLiveRoomManager(sapi, imService, appConfig)
 	h := handler.NewRoomHandler(lm)
 
 	r.GET("/", func(c *gin.Context) {
-		url := fmt.Sprintf("请在客户端配置访问访问地址：%s", c.Request.URL)
+		url := fmt.Sprintf("请在客户端配置访问访问地址：%s", c.Request.Host+c.Request.URL.Path)
 		c.String(http.StatusOK, url)
 	})
 
@@ -103,7 +102,7 @@ func runServer() {
 	v1 := r.Group("/api/v1")
 	{
 		// 演示开启token拦截，实际生产使用请保证开启
-		v1.Use(authMiddleware.MiddlewareFunc())
+		//v1.Use(authMiddleware.MiddlewareFunc())
 		live := v1.Group("/live")
 
 		// 如果是在FC环境，自动更新sts token
@@ -129,6 +128,12 @@ func runServer() {
 			live.POST("/delete", gin.WrapF(h.Delete))
 			live.POST("/update", gin.WrapF(h.Update))
 			live.POST("/token", gin.WrapF(h.GetToken))
+
+			live.POST("/getMeetingInfo", gin.WrapF(h.GetMeetingInfo))
+			live.POST("/joinMeeting", gin.WrapF(h.JoinMeeting))
+			live.POST("/leaveMeeting", gin.WrapF(h.LeaveMeeting))
+			live.POST("/updateMeeting", gin.WrapF(h.UpdateMeeting))
+
 		}
 	}
 
@@ -147,7 +152,7 @@ func runServer() {
 		sw.GET("/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	}
 
-	err = r.Run(":9000")
+	err = r.Run(":7001")
 	if err != nil {
 		log.Panicln(err)
 	}

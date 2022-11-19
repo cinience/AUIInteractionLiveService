@@ -38,11 +38,21 @@ type RoomInfo struct {
 	Mode int `json:"mode"`
 	// 群组Id
 	ChatId string `json:"chat_id"`
+
 	// 连麦Id
 	MeetingId string `json:"meeting_id"`
 
+	// 点播Id
+	VodId string `json:"vod_id"`
+
+	// 连麦成员信息（json序列化）
+	MeetingInfo string `json:"meeting_info" gorm:"size:65535"`
+
 	// 直播间统计
 	Metrics *Metrics `json:"metrics,omitempty" gorm:"-"`
+
+	// 直播转录制，点播信息
+	VodInfo *VodInfo `json:"vod_info,omitempty" gorm:"-"`
 
 	// 用户状态
 	UserStatus *UserStatus `json:"user_status,omitempty" gorm:"-"`
