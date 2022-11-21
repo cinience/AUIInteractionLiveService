@@ -15,8 +15,8 @@ type MeetingActionRequest struct {
 }
 
 // JoinMeeting
-// @Summary 连麦
-// @Description 连麦
+// @Summary 成员加入连麦
+// @Description 成员加入连麦
 // @ID JoinMeeting
 // @Accept  json
 // @Produce  json
@@ -49,8 +49,8 @@ func (h *RoomHandler) JoinMeeting(w http.ResponseWriter, r *http.Request) {
 }
 
 // UpdateMeeting
-// @Summary 连麦
-// @Description 连麦
+// @Summary 更新成员连麦信息
+// @Description 更新成员连麦信息
 // @ID UpdateMeeting
 // @Accept  json
 // @Produce  json
@@ -83,8 +83,8 @@ func (h *RoomHandler) UpdateMeeting(w http.ResponseWriter, r *http.Request) {
 }
 
 // LeaveMeeting
-// @Summary 下麦
-// @Description 下麦
+// @Summary 成员下麦
+// @Description 成员下麦
 // @ID LeaveMeeting
 // @Accept  json
 // @Produce  json
@@ -119,10 +119,43 @@ type GetMeetingInfoRequest struct {
 	Id string `json:"id" example:"直播Id"`
 }
 
+// UpdateMeetingInfo
+// @Summary 全量更新直播连麦人员信息
+// @Description 全量更新直播连麦人员信息
+// @ID UpdateMeetingInfo
+// @Accept  json
+// @Produce  json
+// @Security ApiKeyAuth
+// @param   Authorization header string true "Bearer your-token"
+// @Param   request      body handler.MeetingActionRequest true "请求参数"
+// @Success 200 {object} models.MeetingInfo	"ok"
+// @Failure 400 {object} models.Status	"4xx, 客户端错误"
+// @Failure 500 {object} models.Status	"5xx, 请求失败"
+// @Router /updateMeetingInfo [post]
+func (h *RoomHandler) UpdateMeetingInfo(w http.ResponseWriter, r *http.Request) {
+	var in MeetingActionRequest
+	b := binding.Default(r.Method, strings.Split(r.Header.Get("Content-Type"), ";")[0])
+	err := b.Bind(r, &in)
+	var rst interface{}
+	if err != nil {
+		render.Status(r, http.StatusBadRequest)
+		rst = &models.Status{Code: http.StatusBadRequest, Message: err.Error()}
+		render.DefaultResponder(w, r, rst)
+		return
+	}
+
+	rst, err = h.lm.UpdateMeetingInfo(in.Id, in.Members)
+	if err != nil {
+		render.Status(r, http.StatusInternalServerError)
+		rst = &models.Status{Code: http.StatusInternalServerError, Message: err.Error()}
+	}
+	render.DefaultResponder(w, r, rst)
+}
+
 // GetMeetingInfo
-// @Summary 下麦
-// @Description 下麦
-// @ID ListMeetingMembers
+// @Summary 全量获取连麦信息
+// @Description 全量获取连麦信息
+// @ID GetMeetingInfo
 // @Accept  json
 // @Produce  json
 // @Security ApiKeyAuth

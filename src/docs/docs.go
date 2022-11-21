@@ -191,15 +191,15 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "下麦",
+                "description": "全量获取连麦信息",
                 "consumes": [
                     "application/json"
                 ],
                 "produces": [
                     "application/json"
                 ],
-                "summary": "下麦",
-                "operationId": "ListMeetingMembers",
+                "summary": "全量获取连麦信息",
+                "operationId": "GetMeetingInfo",
                 "parameters": [
                     {
                         "type": "string",
@@ -247,14 +247,14 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "连麦",
+                "description": "成员加入连麦",
                 "consumes": [
                     "application/json"
                 ],
                 "produces": [
                     "application/json"
                 ],
-                "summary": "连麦",
+                "summary": "成员加入连麦",
                 "operationId": "JoinMeeting",
                 "parameters": [
                     {
@@ -303,14 +303,14 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "下麦",
+                "description": "成员下麦",
                 "consumes": [
                     "application/json"
                 ],
                 "produces": [
                     "application/json"
                 ],
-                "summary": "下麦",
+                "summary": "成员下麦",
                 "operationId": "LeaveMeeting",
                 "parameters": [
                     {
@@ -742,15 +742,71 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "连麦",
+                "description": "更新成员连麦信息",
                 "consumes": [
                     "application/json"
                 ],
                 "produces": [
                     "application/json"
                 ],
-                "summary": "连麦",
+                "summary": "更新成员连麦信息",
                 "operationId": "UpdateMeeting",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer your-token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handler.MeetingActionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "schema": {
+                            "$ref": "#/definitions/models.MeetingInfo"
+                        }
+                    },
+                    "400": {
+                        "description": "4xx, 客户端错误",
+                        "schema": {
+                            "$ref": "#/definitions/models.Status"
+                        }
+                    },
+                    "500": {
+                        "description": "5xx, 请求失败",
+                        "schema": {
+                            "$ref": "#/definitions/models.Status"
+                        }
+                    }
+                }
+            }
+        },
+        "/updateMeetingInfo": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "全量更新直播连麦人员信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "全量更新直播连麦人员信息",
+                "operationId": "UpdateMeetingInfo",
                 "parameters": [
                     {
                         "type": "string",
@@ -823,7 +879,6 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "anchor",
-                "anchor_nick",
                 "title"
             ],
             "properties": {
@@ -1072,6 +1127,10 @@ const docTemplate = `{
                 "mic_opened": {
                     "description": "麦克风状态",
                     "type": "boolean"
+                },
+                "rtc_pull_url": {
+                    "description": "连麦拉流地址",
+                    "type": "string"
                 },
                 "user_avatar": {
                     "description": "用户头像",

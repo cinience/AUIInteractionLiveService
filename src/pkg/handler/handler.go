@@ -26,7 +26,7 @@ type CreateRequest struct {
 	// 主播id
 	Anchor string `json:"anchor" binding:"required" example:"主播userId"`
 	// 主播Nick
-	AnchorNick string `json:"anchor_nick" binding:"required" example:"主播nick"`
+	AnchorNick string `json:"anchor_nick" example:"主播nick"`
 	// 模式，默认0 普通直播，1 连麦直播
 	Mode int `json:"mode" default:"0" example:"0"`
 	// 扩展字段，通常是JSON格式字符串

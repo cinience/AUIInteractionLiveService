@@ -45,7 +45,6 @@ definitions:
         type: string
     required:
     - anchor
-    - anchor_nick
     - title
     type: object
   handler.DeleteRequest:
@@ -197,6 +196,9 @@ definitions:
       mic_opened:
         description: 麦克风状态
         type: boolean
+      rtc_pull_url:
+        description: 连麦拉流地址
+        type: string
       user_avatar:
         description: 用户头像
         type: string
@@ -490,8 +492,8 @@ paths:
     post:
       consumes:
       - application/json
-      description: 下麦
-      operationId: ListMeetingMembers
+      description: 全量获取连麦信息
+      operationId: GetMeetingInfo
       parameters:
       - description: Bearer your-token
         in: header
@@ -521,12 +523,12 @@ paths:
             $ref: '#/definitions/models.Status'
       security:
       - ApiKeyAuth: []
-      summary: 下麦
+      summary: 全量获取连麦信息
   /joinMeeting:
     post:
       consumes:
       - application/json
-      description: 连麦
+      description: 成员加入连麦
       operationId: JoinMeeting
       parameters:
       - description: Bearer your-token
@@ -557,12 +559,12 @@ paths:
             $ref: '#/definitions/models.Status'
       security:
       - ApiKeyAuth: []
-      summary: 连麦
+      summary: 成员加入连麦
   /leaveMeeting:
     post:
       consumes:
       - application/json
-      description: 下麦
+      description: 成员下麦
       operationId: LeaveMeeting
       parameters:
       - description: Bearer your-token
@@ -593,7 +595,7 @@ paths:
             $ref: '#/definitions/models.Status'
       security:
       - ApiKeyAuth: []
-      summary: 下麦
+      summary: 成员下麦
   /list:
     post:
       consumes:
@@ -845,7 +847,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: 连麦
+      description: 更新成员连麦信息
       operationId: UpdateMeeting
       parameters:
       - description: Bearer your-token
@@ -876,5 +878,41 @@ paths:
             $ref: '#/definitions/models.Status'
       security:
       - ApiKeyAuth: []
-      summary: 连麦
+      summary: 更新成员连麦信息
+  /updateMeetingInfo:
+    post:
+      consumes:
+      - application/json
+      description: 全量更新直播连麦人员信息
+      operationId: UpdateMeetingInfo
+      parameters:
+      - description: Bearer your-token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handler.MeetingActionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            $ref: '#/definitions/models.MeetingInfo'
+        "400":
+          description: 4xx, 客户端错误
+          schema:
+            $ref: '#/definitions/models.Status'
+        "500":
+          description: 5xx, 请求失败
+          schema:
+            $ref: '#/definitions/models.Status'
+      security:
+      - ApiKeyAuth: []
+      summary: 全量更新直播连麦人员信息
 swagger: "2.0"

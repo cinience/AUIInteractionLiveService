@@ -29,5 +29,7 @@ type LiveRoomManagerAPI interface {
 
 	DelMeetingUser(id string, members []models.MeetingMember) (*models.MeetingInfo, error)
 
+	UpdateMeetingInfo(id string, members []models.MeetingMember) (*models.MeetingInfo, error)
+
 	GetMeetingInfo(id string) (*models.MeetingInfo, error)
 }

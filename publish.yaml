@@ -60,7 +60,7 @@ Parameters:
         service: fc
         authorities:
           - AliyunLiveFullAccess
-          - AliyunVODReadOnlyAccess
+          - AliyunVODFullAccess
     serviceName:
       title: 服务名
       type: string

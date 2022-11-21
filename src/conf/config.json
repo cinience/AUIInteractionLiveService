@@ -18,7 +18,7 @@
     },
     "openapi": {
         "endpoint": "live.aliyuncs.com",
-        "region": "cn-hangzhou",
+        "region": "cn-shanghai",
         "version": "2016-11-01",
         "access_key_id": "******",
         "access_key_secret": "******",

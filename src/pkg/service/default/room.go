@@ -23,7 +23,9 @@ type LiveRoomManager struct {
 }
 
 func NewLiveRoomManager(sa storage.StorageAPI, imSvr *im.LiveIMService, appConfig *config.AppConfig) *LiveRoomManager {
-	return &LiveRoomManager{sa: sa, appConfig: appConfig, imService: imSvr}
+	l := &LiveRoomManager{sa: sa, appConfig: appConfig, imService: imSvr}
+	l.vodService = vod.NewVodService(&appConfig.OpenAPIConfig)
+	return l
 }
 
 func (l *LiveRoomManager) GetIMToken(env, userId, deviceId, deviceType string) (string, error) {
@@ -324,7 +326,7 @@ func (l *LiveRoomManager) getVodInfo(r *models.RoomInfo) (*models.VodInfo, error
 
 	vodInfo := &models.VodInfo{}
 	if vodId == "" {
-		r.VodInfo.Status = models.VodStatusPrepare
+		vodInfo.Status = models.VodStatusPrepare
 		return vodInfo, nil
 	}
 

@@ -15,6 +15,8 @@ type MeetingMember struct {
 	CameraOpened bool `json:"camera_opened"`
 	// 麦克风状态
 	MicOpened bool `json:"mic_opened"`
+	// 连麦拉流地址
+	RtcPullUrl string `json:"rtc_pull_url"`
 }
 
 type MeetingInfo struct {

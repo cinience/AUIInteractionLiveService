@@ -15,6 +15,10 @@ type VodService struct {
 	openAPIConfig *config.OpenAPIConfig
 }
 
+func NewVodService(config *config.OpenAPIConfig) *VodService {
+	return &VodService{openAPIConfig: config}
+}
+
 func (v *VodService) CreateClient() (_result *vod20170321.Client, _err error) {
 	config := &openapi.Config{
 		AccessKeyId:     &v.openAPIConfig.AccessKeyId,
