@@ -240,118 +240,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/joinMeeting": {
-            "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "成员加入连麦",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "成员加入连麦",
-                "operationId": "JoinMeeting",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer your-token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "description": "请求参数",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/handler.MeetingActionRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "ok",
-                        "schema": {
-                            "$ref": "#/definitions/models.MeetingInfo"
-                        }
-                    },
-                    "400": {
-                        "description": "4xx, 客户端错误",
-                        "schema": {
-                            "$ref": "#/definitions/models.Status"
-                        }
-                    },
-                    "500": {
-                        "description": "5xx, 请求失败",
-                        "schema": {
-                            "$ref": "#/definitions/models.Status"
-                        }
-                    }
-                }
-            }
-        },
-        "/leaveMeeting": {
-            "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "成员下麦",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "成员下麦",
-                "operationId": "LeaveMeeting",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer your-token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "description": "请求参数",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/handler.MeetingActionRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "ok",
-                        "schema": {
-                            "$ref": "#/definitions/models.MeetingInfo"
-                        }
-                    },
-                    "400": {
-                        "description": "4xx, 客户端错误",
-                        "schema": {
-                            "$ref": "#/definitions/models.Status"
-                        }
-                    },
-                    "500": {
-                        "description": "5xx, 请求失败",
-                        "schema": {
-                            "$ref": "#/definitions/models.Status"
-                        }
-                    }
-                }
-            }
-        },
         "/list": {
             "post": {
                 "security": [
@@ -735,62 +623,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/updateMeeting": {
-            "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "更新成员连麦信息",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "更新成员连麦信息",
-                "operationId": "UpdateMeeting",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer your-token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "description": "请求参数",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/handler.MeetingActionRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "ok",
-                        "schema": {
-                            "$ref": "#/definitions/models.MeetingInfo"
-                        }
-                    },
-                    "400": {
-                        "description": "4xx, 客户端错误",
-                        "schema": {
-                            "$ref": "#/definitions/models.Status"
-                        }
-                    },
-                    "500": {
-                        "description": "5xx, 请求失败",
-                        "schema": {
-                            "$ref": "#/definitions/models.Status"
-                        }
-                    }
-                }
-            }
-        },
         "/updateMeetingInfo": {
             "post": {
                 "security": [
@@ -1120,10 +952,6 @@ const docTemplate = `{
                     "description": "摄像头状态",
                     "type": "boolean"
                 },
-                "meeting_id": {
-                    "description": "会议(连麦)Id",
-                    "type": "string"
-                },
                 "mic_opened": {
                     "description": "麦克风状态",
                     "type": "boolean"
@@ -1313,9 +1141,17 @@ const docTemplate = `{
                     "description": "推流相关地址信息，动态生成",
                     "$ref": "#/definitions/models.PushLiveInfo"
                 },
+                "started_at": {
+                    "description": "直播开始时间",
+                    "type": "string"
+                },
                 "status": {
                     "description": "直播状态，0-准备中，1-已开始，2-已结束",
                     "type": "integer"
+                },
+                "stopped_at": {
+                    "description": "直播结束时间",
+                    "type": "string"
                 },
                 "title": {
                     "description": "直播标题",

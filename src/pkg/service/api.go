@@ -15,19 +15,13 @@ type LiveRoomManagerAPI interface {
 
 	UpdateRoom(id string, title, notice string, extend string) (*models.RoomInfo, error)
 
-	StartRoom(id string, role string) (*models.RoomInfo, error)
-
-	PauseRoom(id string, role string) (*models.RoomInfo, error)
-
-	StopRoom(id string, role string) (*models.RoomInfo, error)
-
 	DeleteRoom(id string) (*models.RoomInfo, error)
 
-	AddMeetingUser(id string, members []models.MeetingMember) (*models.MeetingInfo, error)
+	StartLive(id string, role string) (*models.RoomInfo, error)
 
-	UpdateMeetingUser(id string, members []models.MeetingMember) (*models.MeetingInfo, error)
+	PauseLive(id string, role string) (*models.RoomInfo, error)
 
-	DelMeetingUser(id string, members []models.MeetingMember) (*models.MeetingInfo, error)
+	StopLive(id string, role string) (*models.RoomInfo, error)
 
 	UpdateMeetingInfo(id string, members []models.MeetingMember) (*models.MeetingInfo, error)
 

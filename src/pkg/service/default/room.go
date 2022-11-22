@@ -133,12 +133,14 @@ func (l *LiveRoomManager) UpdateRoom(id string, title, notice, extends string) (
 	return record, nil
 }
 
-func (l *LiveRoomManager) StartRoom(id string, role string) (*models.RoomInfo, error) {
+func (l *LiveRoomManager) StartLive(id string, role string) (*models.RoomInfo, error) {
 	record, err := l.sa.GetRoom(id)
 	if err != nil {
 		return nil, err
 	}
+
 	record.Status = models.LiveStatusOn
+	record.StartedAt = time.Now()
 	err = l.sa.UpdateRoom(id, record)
 	if err != nil {
 		return nil, err
@@ -147,7 +149,7 @@ func (l *LiveRoomManager) StartRoom(id string, role string) (*models.RoomInfo, e
 	return record, nil
 }
 
-func (l *LiveRoomManager) PauseRoom(id string, role string) (*models.RoomInfo, error) {
+func (l *LiveRoomManager) PauseLive(id string, role string) (*models.RoomInfo, error) {
 	record, err := l.sa.GetRoom(id)
 	if err != nil {
 		return nil, err
@@ -161,11 +163,13 @@ func (l *LiveRoomManager) PauseRoom(id string, role string) (*models.RoomInfo, e
 	return record, nil
 }
 
-func (l *LiveRoomManager) StopRoom(id string, role string) (*models.RoomInfo, error) {
+func (l *LiveRoomManager) StopLive(id string, role string) (*models.RoomInfo, error) {
 	record, err := l.sa.GetRoom(id)
 	if err != nil {
 		return nil, err
 	}
+
+	record.StoppedAt = time.Now()
 	record.Status = models.LiveStatusOff
 	err = l.sa.UpdateRoom(id, record)
 	if err != nil {
@@ -316,7 +320,7 @@ func (l *LiveRoomManager) getVodInfo(r *models.RoomInfo) (*models.VodInfo, error
 		appId := l.appConfig.LiveMicConfig.AppId
 		title := liveId
 		if r.Mode == models.LiveModeLink {
-			title = live2.GetStreamName(appId, liveId, userId)
+			title = live2.GetStreamName(appId, r.MeetingId, userId)
 		}
 		vodId, err = l.vodService.GetVodIdByTitle(title)
 		if err != nil {

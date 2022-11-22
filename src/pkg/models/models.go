@@ -14,6 +14,10 @@ type RoomInfo struct {
 	CreatedAt time.Time `json:"created_at"`
 	// 更新时间
 	UpdatedAt time.Time `json:"updated_at"`
+	// 直播开始时间
+	StartedAt time.Time `json:"started_at"`
+	// 直播结束时间
+	StoppedAt time.Time `json:"stopped_at"`
 
 	// 直播标题
 	Title string `json:"title"`

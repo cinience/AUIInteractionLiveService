@@ -131,17 +131,13 @@ func runServer() {
 
 			live.POST("/updateMeetingInfo", gin.WrapF(h.UpdateMeetingInfo))
 			live.POST("/getMeetingInfo", gin.WrapF(h.GetMeetingInfo))
-			live.POST("/joinMeeting", gin.WrapF(h.JoinMeeting))
-			live.POST("/leaveMeeting", gin.WrapF(h.LeaveMeeting))
-			live.POST("/updateMeeting", gin.WrapF(h.UpdateMeeting))
-
 		}
 	}
 
 	// Swagger功能
 	password := os.Getenv(EnvPasswordName)
 	// 如果密码为空，则关闭swagger的功能
-	if password != "" {
+	if password != "" && password != "null" {
 		sw := r.Group("/swagger")
 		sw.Use(func() gin.HandlerFunc {
 			return func(c *gin.Context) {

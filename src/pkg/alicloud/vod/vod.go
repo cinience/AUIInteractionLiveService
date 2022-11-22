@@ -1,10 +1,11 @@
 package vod
 
 import (
-	"ApsaraLive/pkg/models"
 	"fmt"
+	"log"
 
 	"ApsaraLive/pkg/config"
+	"ApsaraLive/pkg/models"
 	openapi "github.com/alibabacloud-go/darabonba-openapi/v2/client"
 	util "github.com/alibabacloud-go/tea-utils/v2/service"
 	"github.com/alibabacloud-go/tea/tea"
@@ -45,6 +46,8 @@ func (v *VodService) GetVodIdByTitle(title string) (string, error) {
 		return "", err
 	}
 
+	log.Printf("GetVodIdByTitle title:%s, rst:%v", title, rst)
+
 	if rst.Body == nil || rst.Body.MediaList == nil {
 		return "", fmt.Errorf("get vodId failed. rst:%v", rst)
 	}
@@ -72,6 +75,8 @@ func (v *VodService) GetVodPlayInfo(id string) (*models.VodInfo, error) {
 		return nil, err
 	}
 
+	log.Printf("GetVodPlayInfo id:%s, rst:%v", id, rst)
+	
 	if rst.Body == nil || rst.Body.PlayInfoList == nil || len(rst.Body.PlayInfoList.PlayInfo) == 0 {
 		return nil, fmt.Errorf("get playinfo failed. rst:%v", rst)
 	}

@@ -12,9 +12,9 @@ import (
 )
 
 const (
-	NACOS_GROUP        = "DEFAULT_GROUP"
-	NACOS_DATA_ID      = "config.json"
-	NACOS_ADDR_ENVNAME = "NACOS_ADDR"
+	NacosGroup       = "DEFAULT_GROUP"
+	NacosDataId      = "config.json"
+	NacosAddrEnvName = "NACOS_ADDR"
 )
 
 var appConfig AppConfig
@@ -42,8 +42,8 @@ func LoadNacosConfig(address string) (*AppConfig, error) {
 
 	if err := microconfig.Load(nacos.NewSource(
 		nacos.WithAddress([]string{address}),
-		nacos.WithGroup(NACOS_GROUP),
-		nacos.WithDataId(NACOS_DATA_ID),
+		nacos.WithGroup(NacosGroup),
+		nacos.WithDataId(NacosDataId),
 		nacos.WithClientConfig(clientConfig),
 	)); err != nil {
 		return nil, err
@@ -60,7 +60,7 @@ func LoadConfig() (*AppConfig, error) {
 	viper.AddConfigPath("./conf") // path to look for the config file in
 	viper.AddConfigPath(".")      // optionally look for config in the working directory
 
-	address := os.Getenv(NACOS_ADDR_ENVNAME)
+	address := os.Getenv(NacosAddrEnvName)
 	if address != "" {
 		log.Printf("load config from nacos. addr: %s", address)
 		return LoadNacosConfig(address)

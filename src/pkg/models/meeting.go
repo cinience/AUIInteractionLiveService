@@ -3,8 +3,6 @@ package models
 import "encoding/json"
 
 type MeetingMember struct {
-	// 会议(连麦)Id
-	MeetingId string `json:"meeting_id"`
 	// 用户Id
 	UserId string `json:"user_id"`
 	// 用户Nick

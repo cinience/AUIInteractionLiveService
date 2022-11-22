@@ -190,39 +190,6 @@ type LiveStatusRequest struct {
 	UserId string `json:"user_id" binding:"required" example:"当前用户id"`
 }
 
-// Stop
-// @Summary 停止直播
-// @Description 停止直播
-// @ID stop
-// @Accept  json
-// @Produce  json
-// @Security ApiKeyAuth
-// @param   Authorization header string true "Bearer your-token"
-// @Param   request      body handler.LiveStatusRequest true "请求参数"
-// @Success 200 {object} models.RoomInfo	"ok"
-// @Failure 400 {object} models.Status	"4xx, 客户端错误"
-// @Failure 500 {object} models.Status	"5xx, 请求失败"
-// @Router /stop [post]
-func (h *RoomHandler) Stop(w http.ResponseWriter, r *http.Request) {
-	var in DeleteRequest
-	b := binding.Default(r.Method, strings.Split(r.Header.Get("Content-Type"), ";")[0])
-	err := b.Bind(r, &in)
-	var rst interface{}
-	if err != nil {
-		render.Status(r, http.StatusBadRequest)
-		rst = &models.Status{Code: http.StatusBadRequest, Message: err.Error()}
-		render.DefaultResponder(w, r, rst)
-		return
-	}
-
-	rst, err = h.lm.StopRoom(in.Id, in.UserId)
-	if err != nil {
-		render.Status(r, http.StatusInternalServerError)
-		rst = &models.Status{Code: http.StatusInternalServerError, Message: err.Error()}
-	}
-	render.DefaultResponder(w, r, rst)
-}
-
 // Start
 // @Summary 开始直播
 // @Description 开始直播
@@ -248,7 +215,7 @@ func (h *RoomHandler) Start(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rst, err = h.lm.StartRoom(in.Id, in.UserId)
+	rst, err = h.lm.StartLive(in.Id, in.UserId)
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		rst = &models.Status{Code: http.StatusInternalServerError, Message: err.Error()}
@@ -281,7 +248,40 @@ func (h *RoomHandler) Pause(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rst, err = h.lm.PauseRoom(in.Id, in.UserId)
+	rst, err = h.lm.PauseLive(in.Id, in.UserId)
+	if err != nil {
+		render.Status(r, http.StatusInternalServerError)
+		rst = &models.Status{Code: http.StatusInternalServerError, Message: err.Error()}
+	}
+	render.DefaultResponder(w, r, rst)
+}
+
+// Stop
+// @Summary 停止直播
+// @Description 停止直播
+// @ID stop
+// @Accept  json
+// @Produce  json
+// @Security ApiKeyAuth
+// @param   Authorization header string true "Bearer your-token"
+// @Param   request      body handler.LiveStatusRequest true "请求参数"
+// @Success 200 {object} models.RoomInfo	"ok"
+// @Failure 400 {object} models.Status	"4xx, 客户端错误"
+// @Failure 500 {object} models.Status	"5xx, 请求失败"
+// @Router /stop [post]
+func (h *RoomHandler) Stop(w http.ResponseWriter, r *http.Request) {
+	var in DeleteRequest
+	b := binding.Default(r.Method, strings.Split(r.Header.Get("Content-Type"), ";")[0])
+	err := b.Bind(r, &in)
+	var rst interface{}
+	if err != nil {
+		render.Status(r, http.StatusBadRequest)
+		rst = &models.Status{Code: http.StatusBadRequest, Message: err.Error()}
+		render.DefaultResponder(w, r, rst)
+		return
+	}
+
+	rst, err = h.lm.StopLive(in.Id, in.UserId)
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		rst = &models.Status{Code: http.StatusInternalServerError, Message: err.Error()}
