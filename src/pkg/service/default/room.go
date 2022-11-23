@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"time"
 
+	"golang.org/x/sync/errgroup"
+
 	"ApsaraLive/pkg/alicloud/im"
 	live2 "ApsaraLive/pkg/alicloud/live"
 	"ApsaraLive/pkg/alicloud/vod"
@@ -100,14 +102,27 @@ func (l *LiveRoomManager) GetRoomList(pageSize int, pageNum int, role string) ([
 	if err != nil {
 		return nil, err
 	}
-	var roomList []*models.RoomInfo
-	for _, id := range ids {
-		item, err := l.GetRoom(id, role)
-		if err != nil {
-			return nil, err
-		}
-		roomList = append(roomList, item)
+
+	roomList := make([]*models.RoomInfo, len(ids))
+	var g errgroup.Group
+	for idx, id := range ids {
+		curIdx := idx
+		curId := id
+		g.Go(func() error {
+			item, err := l.GetRoom(curId, role)
+			if err != nil {
+				return err
+			}
+			roomList[curIdx] = item
+			return nil
+		})
 	}
+
+	err = g.Wait()
+	if err != nil {
+		return nil, err
+	}
+
 	return roomList, nil
 }
 
@@ -234,6 +249,7 @@ func (l *LiveRoomManager) GetRoom(id string, userId string) (*models.RoomInfo, e
 	if err != nil {
 		return nil, err
 	}
+
 	details, err := imService.GetGroupDetails(r.ChatId, userId)
 	if err != nil {
 		return nil, err
