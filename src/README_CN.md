@@ -1,11 +1,13 @@
 # Live
 
-## 本机测试
+## 构建执行文件
 ```bash
-
-export ADMIN_PASSWORD=your-secret
-
 go build -o main ./cmd/main.go
+```
+
+## 本地运行
+```bash
+export ADMIN_PASSWORD=your-secret
 ./main
 ```
 所有API及对应文档:
