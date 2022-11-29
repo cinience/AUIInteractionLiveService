@@ -2,10 +2,15 @@
 
 ## 本机测试
 ```bash
+
+export ADMIN_PASSWORD=your-secret
+
 go build -o main ./cmd/main.go
 ./main
 ```
+所有API及对应文档:
 浏览器打开：http://localhost:7001/swagger/index.html
+用户名为 admin，密码为您自行设置
 
 
 ## 生成`swagger`文档
