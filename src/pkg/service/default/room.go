@@ -6,8 +6,11 @@ import (
 	"fmt"
 	"time"
 
+	"golang.org/x/sync/errgroup"
+
 	"ApsaraLive/pkg/alicloud/im"
 	live2 "ApsaraLive/pkg/alicloud/live"
+	"ApsaraLive/pkg/alicloud/vod"
 	"ApsaraLive/pkg/config"
 	"ApsaraLive/pkg/models"
 	"ApsaraLive/pkg/storage"
@@ -15,13 +18,16 @@ import (
 )
 
 type LiveRoomManager struct {
-	sa        storage.StorageAPI
-	appConfig *config.AppConfig
-	imService *im.LiveIMService
+	sa         storage.StorageAPI
+	appConfig  *config.AppConfig
+	imService  *im.LiveIMService
+	vodService *vod.VodService
 }
 
 func NewLiveRoomManager(sa storage.StorageAPI, imSvr *im.LiveIMService, appConfig *config.AppConfig) *LiveRoomManager {
-	return &LiveRoomManager{sa: sa, appConfig: appConfig, imService: imSvr}
+	l := &LiveRoomManager{sa: sa, appConfig: appConfig, imService: imSvr}
+	l.vodService = vod.NewVodService(&appConfig.OpenAPIConfig)
+	return l
 }
 
 func (l *LiveRoomManager) GetIMToken(env, userId, deviceId, deviceType string) (string, error) {
@@ -62,17 +68,19 @@ func (l *LiveRoomManager) CreateRoom(title, notice, anchorId string, extends str
 		r.MeetingId = uuid.NewString()
 		r.Mode = mode
 	}
+
 	err = l.sa.CreateRoom(r)
 	if err != nil {
 		return nil, err
 	}
 
-	if mode == models.LiveModeLink {
+	if r.Mode == models.LiveModeLink {
 		r.LinkInfo, err = l.getRtcInfo(r.MeetingId, anchorId, anchorId, true, true)
 		if err != nil {
 			return nil, err
 		}
 	}
+
 	// 保持普通推拉流信息存在
 	{
 		r.PushInfo, err = l.getPushLiveInfo(r)
@@ -94,14 +102,27 @@ func (l *LiveRoomManager) GetRoomList(pageSize int, pageNum int, role string) ([
 	if err != nil {
 		return nil, err
 	}
-	var roomList []*models.RoomInfo
-	for _, id := range ids {
-		item, err := l.GetRoom(id, role)
-		if err != nil {
-			return nil, err
-		}
-		roomList = append(roomList, item)
+
+	roomList := make([]*models.RoomInfo, len(ids))
+	var g errgroup.Group
+	for idx, id := range ids {
+		curIdx := idx
+		curId := id
+		g.Go(func() error {
+			item, err := l.GetRoom(curId, role)
+			if err != nil {
+				return err
+			}
+			roomList[curIdx] = item
+			return nil
+		})
 	}
+
+	err = g.Wait()
+	if err != nil {
+		return nil, err
+	}
+
 	return roomList, nil
 }
 
@@ -127,12 +148,14 @@ func (l *LiveRoomManager) UpdateRoom(id string, title, notice, extends string) (
 	return record, nil
 }
 
-func (l *LiveRoomManager) StartRoom(id string, role string) (*models.RoomInfo, error) {
+func (l *LiveRoomManager) StartLive(id string, role string) (*models.RoomInfo, error) {
 	record, err := l.sa.GetRoom(id)
 	if err != nil {
 		return nil, err
 	}
+
 	record.Status = models.LiveStatusOn
+	record.StartedAt = time.Now()
 	err = l.sa.UpdateRoom(id, record)
 	if err != nil {
 		return nil, err
@@ -141,7 +164,7 @@ func (l *LiveRoomManager) StartRoom(id string, role string) (*models.RoomInfo, e
 	return record, nil
 }
 
-func (l *LiveRoomManager) PauseRoom(id string, role string) (*models.RoomInfo, error) {
+func (l *LiveRoomManager) PauseLive(id string, role string) (*models.RoomInfo, error) {
 	record, err := l.sa.GetRoom(id)
 	if err != nil {
 		return nil, err
@@ -155,11 +178,13 @@ func (l *LiveRoomManager) PauseRoom(id string, role string) (*models.RoomInfo, e
 	return record, nil
 }
 
-func (l *LiveRoomManager) StopRoom(id string, role string) (*models.RoomInfo, error) {
+func (l *LiveRoomManager) StopLive(id string, role string) (*models.RoomInfo, error) {
 	record, err := l.sa.GetRoom(id)
 	if err != nil {
 		return nil, err
 	}
+
+	record.StoppedAt = time.Now()
 	record.Status = models.LiveStatusOff
 	err = l.sa.UpdateRoom(id, record)
 	if err != nil {
@@ -196,7 +221,7 @@ func (l *LiveRoomManager) GetRoom(id string, userId string) (*models.RoomInfo, e
 		r.ChatId = id
 	}
 
-	if r.Mode == models.LiveModeLink {
+	if r.Mode >= models.LiveModeLink {
 		r.LinkInfo, err = l.getRtcInfo(r.MeetingId, userId, r.AnchorId, true, userId == r.AnchorId)
 		if err != nil {
 			return nil, err
@@ -209,7 +234,13 @@ func (l *LiveRoomManager) GetRoom(id string, userId string) (*models.RoomInfo, e
 			return nil, err
 		}
 	}
+
 	r.PullInfo, err = l.getPullLiveInfo(r)
+	if err != nil {
+		return nil, err
+	}
+
+	r.VodInfo, err = l.getVodInfo(r)
 	if err != nil {
 		return nil, err
 	}
@@ -218,6 +249,7 @@ func (l *LiveRoomManager) GetRoom(id string, userId string) (*models.RoomInfo, e
 	if err != nil {
 		return nil, err
 	}
+
 	details, err := imService.GetGroupDetails(r.ChatId, userId)
 	if err != nil {
 		return nil, err
@@ -267,7 +299,7 @@ func (l *LiveRoomManager) getPullLiveInfo(r *models.RoomInfo) (*live2.PullLiveIn
 }
 
 // getRtcInfo https://help.aliyun.com/document_detail/450515.html
-func (l *LiveRoomManager) getRtcInfo(pkId, userId string, anchorId string, needLink bool, isAnchor bool) (*models.LinkInfo, error) {
+func (l *LiveRoomManager) getRtcInfo(meetingId, userId string, anchorId string, needLink bool, isAnchor bool) (*models.LinkInfo, error) {
 	var err error
 	//  artc: //live.aliyun.com）+推流标识位（push）+roomid（房间ID）+SdkIAppID（连麦应用ID）+UserID（主播ID）+timestamp（有效时长时间戳）+token
 	t := &live2.LiveMic{
@@ -277,7 +309,7 @@ func (l *LiveRoomManager) getRtcInfo(pkId, userId string, anchorId string, needL
 	schema := l.appConfig.LiveStreamConfig.Scheme
 	domain := l.appConfig.LiveStreamConfig.PullUrl
 	pullAuthKey := l.appConfig.LiveStreamConfig.PullAuthKey
-	id := pkId
+	id := meetingId
 	expirationSeconds := int64(time.Hour * 24 / time.Second)
 
 	linkInfo := &models.LinkInfo{}
@@ -290,6 +322,35 @@ func (l *LiveRoomManager) getRtcInfo(pkId, userId string, anchorId string, needL
 	linkInfo.CdnPullInfo = t.RTCLinkCDNUrl(id, anchorId, schema, domain, pullAuthKey, expirationSeconds)
 
 	return linkInfo, err
+}
+
+func (l *LiveRoomManager) getVodInfo(r *models.RoomInfo) (*models.VodInfo, error) {
+	if r.Status != models.LiveStatusOff {
+		return nil, nil
+	}
+	var err error
+	vodId := r.VodId
+	if vodId == "" {
+		liveId := r.ID
+		userId := r.AnchorId
+		appId := l.appConfig.LiveMicConfig.AppId
+		title := liveId
+		if r.Mode == models.LiveModeLink {
+			title = live2.GetStreamName(appId, r.MeetingId, userId)
+		}
+		vodId, err = l.vodService.GetVodIdByTitle(title)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	vodInfo := &models.VodInfo{}
+	if vodId == "" {
+		vodInfo.Status = models.VodStatusPrepare
+		return vodInfo, nil
+	}
+
+	return l.vodService.GetVodPlayInfo(vodId)
 }
 
 func (l *LiveRoomManager) getStagingToken(deviceType, token string) (string, error) {

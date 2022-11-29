@@ -68,14 +68,13 @@ func runServer() {
 			panic(err)
 		}
 		log.Printf("User %s as storage service...", appConfig.StorageConfig.Type)
-
 	}
 
 	lm := _default.NewLiveRoomManager(sapi, imService, appConfig)
 	h := handler.NewRoomHandler(lm)
 
 	r.GET("/", func(c *gin.Context) {
-		url := fmt.Sprintf("请在客户端配置访问访问地址：%s", c.Request.URL)
+		url := fmt.Sprintf("请在客户端配置访问访问地址：%s", c.Request.Host+c.Request.URL.Path)
 		c.String(http.StatusOK, url)
 	})
 
@@ -129,13 +128,16 @@ func runServer() {
 			live.POST("/delete", gin.WrapF(h.Delete))
 			live.POST("/update", gin.WrapF(h.Update))
 			live.POST("/token", gin.WrapF(h.GetToken))
+
+			live.POST("/updateMeetingInfo", gin.WrapF(h.UpdateMeetingInfo))
+			live.POST("/getMeetingInfo", gin.WrapF(h.GetMeetingInfo))
 		}
 	}
 
 	// Swagger功能
 	password := os.Getenv(EnvPasswordName)
 	// 如果密码为空，则关闭swagger的功能
-	if password != "" {
+	if password != "" && password != "null" {
 		sw := r.Group("/swagger")
 		sw.Use(func() gin.HandlerFunc {
 			return func(c *gin.Context) {
@@ -147,7 +149,7 @@ func runServer() {
 		sw.GET("/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	}
 
-	err = r.Run(":9000")
+	err = r.Run(":7001")
 	if err != nil {
 		log.Panicln(err)
 	}

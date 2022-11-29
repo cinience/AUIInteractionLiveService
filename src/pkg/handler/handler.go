@@ -26,19 +26,9 @@ type CreateRequest struct {
 	// 主播id
 	Anchor string `json:"anchor" binding:"required" example:"主播userId"`
 	// 主播Nick
-	AnchorNick string `json:"anchor_nick" binding:"required" example:"主播nick"`
+	AnchorNick string `json:"anchor_nick" example:"主播nick"`
 	// 模式，默认0 普通直播，1 连麦直播
 	Mode int `json:"mode" default:"0" example:"0"`
-	// 扩展字段，通常是JSON格式字符串
-	Extends string `json:"extends" example:"扩展字段，通常是JSON格式字符串"`
-}
-
-type UpdateRequest struct {
-	Id string `json:"id" example:"uuid，可以是消息组id"`
-	// 直播标题
-	Title string `json:"title" example:"直播标题"`
-	// 直播公告
-	Notice string `json:"notice" example:"直播公告"`
 	// 扩展字段，通常是JSON格式字符串
 	Extends string `json:"extends" example:"扩展字段，通常是JSON格式字符串"`
 }
@@ -153,6 +143,16 @@ func (h *RoomHandler) Get(w http.ResponseWriter, r *http.Request) {
 	render.DefaultResponder(w, r, rst)
 }
 
+type UpdateRequest struct {
+	Id string `json:"id" example:"直播Id"`
+	// 直播标题
+	Title string `json:"title" example:"直播标题"`
+	// 直播公告
+	Notice string `json:"notice" example:"直播公告"`
+	// 扩展字段，通常是JSON格式字符串
+	Extends string `json:"extends" example:"扩展字段，通常是JSON格式字符串"`
+}
+
 // Update
 // @Summary 更新房间详情
 // @Description 更新房间详情
@@ -190,39 +190,6 @@ type LiveStatusRequest struct {
 	UserId string `json:"user_id" binding:"required" example:"当前用户id"`
 }
 
-// Stop
-// @Summary 停止直播
-// @Description 停止直播
-// @ID stop
-// @Accept  json
-// @Produce  json
-// @Security ApiKeyAuth
-// @param   Authorization header string true "Bearer your-token"
-// @Param   request      body handler.LiveStatusRequest true "请求参数"
-// @Success 200 {object} models.RoomInfo	"ok"
-// @Failure 400 {object} models.Status	"4xx, 客户端错误"
-// @Failure 500 {object} models.Status	"5xx, 请求失败"
-// @Router /stop [post]
-func (h *RoomHandler) Stop(w http.ResponseWriter, r *http.Request) {
-	var in DeleteRequest
-	b := binding.Default(r.Method, strings.Split(r.Header.Get("Content-Type"), ";")[0])
-	err := b.Bind(r, &in)
-	var rst interface{}
-	if err != nil {
-		render.Status(r, http.StatusBadRequest)
-		rst = &models.Status{Code: http.StatusBadRequest, Message: err.Error()}
-		render.DefaultResponder(w, r, rst)
-		return
-	}
-
-	rst, err = h.lm.StopRoom(in.Id, in.UserId)
-	if err != nil {
-		render.Status(r, http.StatusInternalServerError)
-		rst = &models.Status{Code: http.StatusInternalServerError, Message: err.Error()}
-	}
-	render.DefaultResponder(w, r, rst)
-}
-
 // Start
 // @Summary 开始直播
 // @Description 开始直播
@@ -248,7 +215,7 @@ func (h *RoomHandler) Start(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rst, err = h.lm.StartRoom(in.Id, in.UserId)
+	rst, err = h.lm.StartLive(in.Id, in.UserId)
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		rst = &models.Status{Code: http.StatusInternalServerError, Message: err.Error()}
@@ -281,7 +248,40 @@ func (h *RoomHandler) Pause(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rst, err = h.lm.PauseRoom(in.Id, in.UserId)
+	rst, err = h.lm.PauseLive(in.Id, in.UserId)
+	if err != nil {
+		render.Status(r, http.StatusInternalServerError)
+		rst = &models.Status{Code: http.StatusInternalServerError, Message: err.Error()}
+	}
+	render.DefaultResponder(w, r, rst)
+}
+
+// Stop
+// @Summary 停止直播
+// @Description 停止直播
+// @ID stop
+// @Accept  json
+// @Produce  json
+// @Security ApiKeyAuth
+// @param   Authorization header string true "Bearer your-token"
+// @Param   request      body handler.LiveStatusRequest true "请求参数"
+// @Success 200 {object} models.RoomInfo	"ok"
+// @Failure 400 {object} models.Status	"4xx, 客户端错误"
+// @Failure 500 {object} models.Status	"5xx, 请求失败"
+// @Router /stop [post]
+func (h *RoomHandler) Stop(w http.ResponseWriter, r *http.Request) {
+	var in DeleteRequest
+	b := binding.Default(r.Method, strings.Split(r.Header.Get("Content-Type"), ";")[0])
+	err := b.Bind(r, &in)
+	var rst interface{}
+	if err != nil {
+		render.Status(r, http.StatusBadRequest)
+		rst = &models.Status{Code: http.StatusBadRequest, Message: err.Error()}
+		render.DefaultResponder(w, r, rst)
+		return
+	}
+
+	rst, err = h.lm.StopLive(in.Id, in.UserId)
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		rst = &models.Status{Code: http.StatusInternalServerError, Message: err.Error()}

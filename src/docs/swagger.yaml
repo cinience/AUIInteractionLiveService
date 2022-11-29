@@ -45,7 +45,6 @@ definitions:
         type: string
     required:
     - anchor
-    - anchor_nick
     - title
     type: object
   handler.DeleteRequest:
@@ -59,6 +58,12 @@ definitions:
     required:
     - id
     - user_id
+    type: object
+  handler.GetMeetingInfoRequest:
+    properties:
+      id:
+        example: 直播Id
+        type: string
     type: object
   handler.GetRequest:
     properties:
@@ -99,6 +104,16 @@ definitions:
     - id
     - user_id
     type: object
+  handler.MeetingActionRequest:
+    properties:
+      id:
+        example: 直播Id
+        type: string
+      members:
+        items:
+          $ref: '#/definitions/models.MeetingMember'
+        type: array
+    type: object
   handler.TokenRequest:
     properties:
       device_id:
@@ -129,7 +144,7 @@ definitions:
         example: 扩展字段，通常是JSON格式字符串
         type: string
       id:
-        example: uuid，可以是消息组id
+        example: 直播Id
         type: string
       notice:
         description: 直播公告
@@ -163,6 +178,34 @@ definitions:
         description: 推流地址
         type: string
     type: object
+  models.MeetingInfo:
+    properties:
+      members:
+        items:
+          $ref: '#/definitions/models.MeetingMember'
+        type: array
+    type: object
+  models.MeetingMember:
+    properties:
+      camera_opened:
+        description: 摄像头状态
+        type: boolean
+      mic_opened:
+        description: 麦克风状态
+        type: boolean
+      rtc_pull_url:
+        description: 连麦拉流地址
+        type: string
+      user_avatar:
+        description: 用户头像
+        type: string
+      user_id:
+        description: 用户Id
+        type: string
+      user_nick:
+        description: 用户Nick
+        type: string
+    type: object
   models.Metrics:
     properties:
       like_count:
@@ -172,6 +215,61 @@ definitions:
       pv:
         type: integer
       uv:
+        type: integer
+    type: object
+  models.PlayInfo:
+    properties:
+      bit_depth:
+        description: 颜色位深。取值为整数。
+        type: integer
+      bit_rate:
+        description: 媒体流码率。单位：Kbps。
+        type: string
+      creation_time:
+        description: 创建时间 音/视频创建时间。格式为：yyyy-MM-ddTHH:mm:ssZ（UTC时间）。
+        type: string
+      definition:
+        description: 视频流清晰度定义。取值： FD：流畅。 LD：标清。 SD：高清。 HD：超清 OD：原画。 2K：2K。 4K：4K。
+          SQ：普通音质。 HQ：高音质。 AUTO：自适应码率。
+        type: string
+      duration:
+        description: 媒体流长度。单位：秒。
+        type: string
+      encrypt:
+        description: 媒体流是否加密流，取值：0：否。1 是。
+        type: integer
+      encrypt_type:
+        description: '媒体流加密类型。取值: AliyunVoDEncryption：阿里云视频加密。AliyunVoDEncryption：阿里云视频加密。'
+        type: string
+      format:
+        description: 媒体流格式。 若媒体文件为视频则取值： mp4、 m3u8。
+        type: string
+      fps:
+        description: 媒体流帧率。单位：帧/每秒。
+        type: string
+      hdr_type:
+        description: '媒体流HDR类型。取值: HDR,HDR10,HLG,DolbyVision,HDRVivid,HDRVivid'
+        type: string
+      height:
+        description: 媒体流高度。单位：px。
+        type: integer
+      play_url:
+        description: 媒体流宽度。单位：px。
+        type: string
+      size:
+        description: 媒体流宽度。单位：px。
+        type: integer
+      status:
+        description: 媒体流状态，Normal：正常状态，标记的是每种清晰度和格式的一路最新转码完成的流的状态。Invisible：不可见状态，当每种清晰度和格式有多路重复的转码流时，除了最新的一路流会被标记为正常状态，其他流会被标记为不可见状态。
+        type: string
+      stream_type:
+        description: 媒体流类型。 若媒体流为视频则取值：video，若是纯音频则取值：audio。
+        type: string
+      watermark_id:
+        description: 当前媒体流关联的水印ID。
+        type: string
+      width:
+        description: 媒体流宽度。单位：px。
         type: integer
     type: object
   models.PushLiveInfo:
@@ -212,6 +310,9 @@ definitions:
       meeting_id:
         description: 连麦Id
         type: string
+      meeting_info:
+        description: 连麦成员信息（json序列化）
+        type: string
       metrics:
         $ref: '#/definitions/models.Metrics'
         description: 直播间统计
@@ -227,9 +328,15 @@ definitions:
       push_url_info:
         $ref: '#/definitions/models.PushLiveInfo'
         description: 推流相关地址信息，动态生成
+      started_at:
+        description: 直播开始时间
+        type: string
       status:
         description: 直播状态，0-准备中，1-已开始，2-已结束
         type: integer
+      stopped_at:
+        description: 直播结束时间
+        type: string
       title:
         description: 直播标题
         type: string
@@ -239,6 +346,12 @@ definitions:
       user_status:
         $ref: '#/definitions/models.UserStatus'
         description: 用户状态
+      vod_id:
+        description: 点播Id
+        type: string
+      vod_info:
+        $ref: '#/definitions/models.VodInfo'
+        description: 直播转录制，点播信息
     type: object
   models.Status:
     properties:
@@ -256,6 +369,16 @@ definitions:
         items:
           type: string
         type: array
+    type: object
+  models.VodInfo:
+    properties:
+      playlist:
+        items:
+          $ref: '#/definitions/models.PlayInfo'
+        type: array
+      status:
+        description: 状态  0 准备中，1 成功，2 失败
+        type: integer
     type: object
 info:
   contact: {}
@@ -368,6 +491,42 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: 获取直播房间详情
+  /getMeetingInfo:
+    post:
+      consumes:
+      - application/json
+      description: 全量获取连麦信息
+      operationId: GetMeetingInfo
+      parameters:
+      - description: Bearer your-token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handler.GetMeetingInfoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            $ref: '#/definitions/models.MeetingInfo'
+        "400":
+          description: 4xx, 客户端错误
+          schema:
+            $ref: '#/definitions/models.Status'
+        "500":
+          description: 5xx, 请求失败
+          schema:
+            $ref: '#/definitions/models.Status'
+      security:
+      - ApiKeyAuth: []
+      summary: 全量获取连麦信息
   /list:
     post:
       consumes:
@@ -615,4 +774,40 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: 更新房间详情
+  /updateMeetingInfo:
+    post:
+      consumes:
+      - application/json
+      description: 全量更新直播连麦人员信息
+      operationId: UpdateMeetingInfo
+      parameters:
+      - description: Bearer your-token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handler.MeetingActionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            $ref: '#/definitions/models.MeetingInfo'
+        "400":
+          description: 4xx, 客户端错误
+          schema:
+            $ref: '#/definitions/models.Status'
+        "500":
+          description: 5xx, 请求失败
+          schema:
+            $ref: '#/definitions/models.Status'
+      security:
+      - ApiKeyAuth: []
+      summary: 全量更新直播连麦人员信息
 swagger: "2.0"

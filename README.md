@@ -24,10 +24,11 @@
 
 使用该项目，推荐您拥有以下的产品权限 / 策略：
 
-| 服务/业务 | 函数计算 |     
-| --- |  --- |   
-| 权限/策略 | AliyunFCFullAccess |     
+| 服务/业务 | 函数计算                 |     
+| --- |----------------------|   
+| 权限/策略 | AliyunFCFullAccess   |     
 | 权限/策略 | AliyunLiveFullAccess |     
+| 权限/策略 | AliyunVODFullAccess    |     
 
 </table>
 
