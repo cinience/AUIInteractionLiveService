@@ -1,4 +1,5 @@
 # Live
+* 本项目代码仅作范例演示使用。
 
 ## 构建执行文件
 ```bash
@@ -13,6 +14,8 @@ export ADMIN_PASSWORD=your-secret
 所有API及对应文档:
 浏览器打开：http://localhost:7001/swagger/index.html
 用户名为 admin，密码为您自行设置
+
+* 注意：目前数据库表为自动创建，线上请关注数据库变更，及相关索引请请自行构建。
 
 
 ## 生成`swagger`文档

@@ -61,7 +61,7 @@ func runServer() {
 	var sapi storage.StorageAPI
 	if appConfig.StorageConfig.Type == "none" {
 		sapi = mock.NewMockDb(imService)
-		log.Println("User liveIM as storage service...")
+		log.Println("Use liveIM as storage service...")
 	} else {
 		sapi, err = database.NewGormDb(appConfig.StorageConfig.Type, appConfig.StorageConfig.Url)
 		if err != nil {

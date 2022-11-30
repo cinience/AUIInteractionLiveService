@@ -24,7 +24,7 @@
         "sts_token": ""
     },
     "storage": {
-        "type": "none",
+        "type": "sqlite3",
         "url": "./live.db"
     },
     "gateway": {
