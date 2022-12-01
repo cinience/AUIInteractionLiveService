@@ -67,7 +67,7 @@ func runServer() {
 		if err != nil {
 			panic(err)
 		}
-		log.Printf("User %s as storage service...", appConfig.StorageConfig.Type)
+		log.Printf("Use %s as storage service...", appConfig.StorageConfig.Type)
 	}
 
 	lm := _default.NewLiveRoomManager(sapi, imService, appConfig)

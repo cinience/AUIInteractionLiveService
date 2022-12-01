@@ -153,8 +153,6 @@ func (t *LiveIMService) GetGroupDetails(groupId string, userId string) (*RoomUse
 			return nil, err
 		}
 		if len(out.Result.UserList) == 0 {
-			// todo 校验为啥没有内容
-			//return nil, errors.New("get user info failed" + string(sout))
 			details.IsMute = false
 		} else {
 			details.IsMute = out.Result.UserList[0].IsMute
@@ -213,7 +211,7 @@ func (t *LiveIMService) UpdateMessageGroup(groupId, extends string) error {
 		return err
 	}
 
-	log.Println("&&&", rst)
+	log.Println("rst:", rst)
 	if status != http.StatusOK {
 		return errors.New("unknown status")
 	}
