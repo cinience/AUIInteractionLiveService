@@ -33,7 +33,7 @@ type RoomInfo struct {
 	AnchorNick string `json:"anchor_nick"`
 
 	// 扩展字段
-	Extends string `json:"extends" gorm:"size:65535"`
+	Extends string `json:"extends" gorm:"type:text"`
 
 	// 直播状态，0-准备中，1-已开始，2-已结束
 	Status int `json:"status"`
@@ -50,7 +50,7 @@ type RoomInfo struct {
 	VodId string `json:"vod_id"`
 
 	// 连麦成员信息（json序列化）
-	MeetingInfo string `json:"meeting_info" gorm:"size:65535"`
+	MeetingInfo string `json:"meeting_info" gorm:"type:text"`
 
 	// 直播间统计
 	Metrics *Metrics `json:"metrics,omitempty" gorm:"-"`
@@ -70,9 +70,6 @@ type RoomInfo struct {
 	LinkInfo *LinkInfo `json:"link_info,omitempty" gorm:"-"`
 }
 
-// 前缀字段（artc://）+固定字段（live.aliyun.com）+拉流标识位（play）+roomid（房间ID）+SdkIAppID（连麦应用ID）+UserID（连麦观众ID）+timestamp（有效时长时间戳）+token
-// 播放前缀+播流域名+AppName（live） + StreamID（由连麦应用ID_房间ID_主播ID_camera组成）+auth_key
-
 type Metrics struct {
 	OnlineCount uint64 `json:"online_count" gorm:"-"`
 	LikeCount   uint64 `json:"like_count" gorm:"-"`
@@ -85,6 +82,9 @@ type UserStatus struct {
 	MuteSource []string `json:"mute_source" gorm:"-"`
 }
 
+// 前缀字段（artc://）+固定字段（live.aliyun.com）+拉流标识位（play）+roomid（房间ID）+SdkIAppID（连麦应用ID）+UserID（连麦观众ID）+timestamp（有效时长时间戳）+token
+// 播放前缀+播流域名+AppName（live） + StreamID（由连麦应用ID_房间ID_主播ID_camera组成）+auth_key
+// LinkInfo 直播连麦推拉流
 type LinkInfo struct {
 	// 推流地址
 	RtcPushUrl string `json:"rtc_push_url"`
