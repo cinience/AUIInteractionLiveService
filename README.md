@@ -14,7 +14,7 @@
 
 <description>
 
-> ***基于函数计算快速部署互动直播Demo(ApsaraLiveDemo)***
+> ***基于函数计算快速部署互动直播Demo(ApsaraLiveDemo) [官网介绍](https://help.aliyun.com/document_detail/462753.html) ***
 
 </description>
 
