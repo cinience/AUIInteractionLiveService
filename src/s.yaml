@@ -38,7 +38,7 @@ services:
         name: ${vars.functionName}
         description: 'Serverless Devs Live Service'
         codeUri: './target'
-        cAPort: 7001
+        caPort: 7001
         customRuntimeConfig:
           command:
             - ./main
