@@ -6,6 +6,9 @@ on:
 
 name: Latest Release
 
+env:
+  APP_NAME: ApsaraLiveServer
+
 defaults:
   run:
     shell: bash
@@ -98,16 +101,16 @@ jobs:
           GOOSARCH=${{matrix.goosarch}}
           GOOS=${GOOSARCH%/*}
           GOARCH=${GOOSARCH#*/}
-          BINARY_NAME=${{github.repository}}-$GOOS-$GOARCH
+          BINARY_NAME=${{env.APP_NAME}}-$GOOS-$GOARCH
           echo "BINARY_NAME=$BINARY_NAME" >> $GITHUB_ENV
           echo "GOOS=$GOOS" >> $GITHUB_ENV
           echo "GOARCH=$GOARCH" >> $GITHUB_ENV
       - name: Build
         run: |
-          cd src && go build -o ../"$BINARY_NAME" cmd/main.go; cd -
+          cd src && go build -ldflags '-w -s' -o ../"$BINARY_NAME" cmd/main.go; cd -
       - name: Release Notes
         run:
-          git log $(git describe HEAD~ --tags --abbrev=0)..HEAD --pretty='format:* %h %s%n  * %an <%ae>' --no-merges >> ".github/RELEASE-TEMPLATE.md"
+          git log $(git describe HEAD~ --tags --abbrev=0)..HEAD --pretty='format:* %h %s%n  * %an' --no-merges >> ".github/RELEASE-TEMPLATE.md"
       - name: Release with Notes
         uses: softprops/action-gh-release@v1
         with:
