@@ -84,7 +84,7 @@ jobs:
           # - 'solaris/amd64'
           # - 'windows/386'
           - 'windows/amd64'
-          - 'windows/arm'
+          # - 'windows/arm'
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
