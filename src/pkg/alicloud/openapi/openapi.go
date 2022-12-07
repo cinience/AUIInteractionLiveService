@@ -28,7 +28,7 @@ func (t *LiveAPIService) DoRequest(config *config.OpenAPIConfig, changeKeyStyle 
 	impConfig := sdk.NewConfig()
 
 	region := "cn-hangzhou"
-	if region != "" {
+	if config.Region != "" {
 		region = config.Region
 	}
 
@@ -152,7 +152,7 @@ func (t *LiveAPIService) Encode(changeKeyStyle bool, data map[string]interface{}
 	return string(rst), nil
 }
 
-// 	Decode 将json字符串转换为小驼峰风格Key的map
+// Decode 将json字符串转换为小驼峰风格Key的map
 func (t *LiveAPIService) Decode(changeKeyStyle bool, data string) (map[string]interface{}, error) {
 	var m map[string]interface{}
 	err := json.Unmarshal([]byte(data), &m)
@@ -202,7 +202,6 @@ func PopErrorResponse(err error) *ErrorResponse {
 			Message:     err.Error(),
 		}
 	}
-	return nil
 }
 
 type ErrorResponse struct {

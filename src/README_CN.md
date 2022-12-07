@@ -15,7 +15,7 @@ export ADMIN_PASSWORD=your-secret
 浏览器打开：http://localhost:7001/swagger/index.html
 用户名为 admin，密码为您自行设置
 
-* 注意：目前数据库表为自动创建，线上请关注数据库变更，及相关索引请请自行构建。
+* 注意：目前数据库表为自动创建，线上请关注数据库变更，相关索引及查询优化需自行关注。
 
 
 ## 生成`swagger`文档
