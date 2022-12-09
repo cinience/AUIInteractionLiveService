@@ -34,6 +34,7 @@ services:
         name: ${vars.serviceName}
         description: "Serverless Devs Live Service"
         logConfig: auto
+        role: "{{ roleArn }}"
       function:
         name: ${vars.functionName}
         description: 'Serverless Devs Live Service'
