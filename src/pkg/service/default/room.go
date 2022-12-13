@@ -43,7 +43,7 @@ func (l *LiveRoomManager) GetIMToken(env, userId, deviceId, deviceType string) (
 
 }
 
-func (l *LiveRoomManager) CreateRoom(title, notice, anchorId string, extends string, mode int) (*models.RoomInfo, error) {
+func (l *LiveRoomManager) CreateRoom(title, notice, coverUrl, anchorId string, extends string, mode int) (*models.RoomInfo, error) {
 	var chatId string
 	var err error
 	chatId, err = l.imService.CreateMessageGroup(anchorId, nil)
@@ -59,6 +59,7 @@ func (l *LiveRoomManager) CreateRoom(title, notice, anchorId string, extends str
 		UpdatedAt: time.Now(),
 		Title:     title,
 		Notice:    notice,
+		CoverUrl:  coverUrl,
 		AnchorId:  anchorId,
 		Extends:   extends,
 	}
@@ -271,6 +272,10 @@ func (l *LiveRoomManager) GetRoom(id string, userId string) (*models.RoomInfo, e
 }
 
 func (l *LiveRoomManager) getPushLiveInfo(r *models.RoomInfo) (*models.PushLiveInfo, error) {
+	if r.Status == models.LiveStatusOff {
+		return nil, nil
+	}
+
 	streamName := r.ID
 	liveConfig := l.appConfig.LiveStreamConfig
 
@@ -292,6 +297,10 @@ M3U8 格式: http://wgtest.pull.mcsun.cn/AppName/StreamName.m3u8?auth_key={鉴�
 UDP 格式: artc://wgtest.pull.mcsun.cn/AppName/StreamName?auth_key={鉴权串}
 */
 func (l *LiveRoomManager) getPullLiveInfo(r *models.RoomInfo) (*live2.PullLiveInfo, error) {
+	if r.Status == models.LiveStatusOff {
+		return nil, nil
+	}
+
 	streamName := r.ID
 	liveConfig := l.appConfig.LiveStreamConfig
 
@@ -328,6 +337,7 @@ func (l *LiveRoomManager) getVodInfo(r *models.RoomInfo) (*models.VodInfo, error
 	if r.Status != models.LiveStatusOff {
 		return nil, nil
 	}
+
 	var err error
 	vodId := r.VodId
 	if vodId == "" {

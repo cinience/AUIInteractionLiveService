@@ -9,7 +9,7 @@ type LiveRoomManagerAPI interface {
 
 	GetRoomList(pageSize int, pageNum int, role string) ([]*models.RoomInfo, error)
 
-	CreateRoom(title, notice, Anchor string, extend string, mode int) (*models.RoomInfo, error)
+	CreateRoom(title, notice, coverUrl string, Anchor string, extend string, mode int) (*models.RoomInfo, error)
 
 	GetRoom(id, role string) (*models.RoomInfo, error)
 

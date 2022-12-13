@@ -23,6 +23,8 @@ type CreateRequest struct {
 	Title string `json:"title" binding:"required" example:"直播标题"`
 	// 直播公告
 	Notice string `json:"notice" example:"直播公告"`
+	// 直播封面url
+	CoverUrl string `json:"cover_url" example:"直播封面url"`
 	// 主播id
 	Anchor string `json:"anchor" binding:"required" example:"主播userId"`
 	// 主播Nick
@@ -57,7 +59,7 @@ func (h *RoomHandler) Create(w http.ResponseWriter, r *http.Request) {
 		render.DefaultResponder(w, r, rst)
 		return
 	}
-	rst, err = h.lm.CreateRoom(in.Title, in.Notice, in.Anchor, in.Extends, in.Mode)
+	rst, err = h.lm.CreateRoom(in.Title, in.Notice, in.CoverUrl, in.Anchor, in.Extends, in.Mode)
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		rst = &models.Status{Code: http.StatusInternalServerError, Message: err.Error()}
