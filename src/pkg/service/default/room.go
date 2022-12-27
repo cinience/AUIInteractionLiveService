@@ -98,8 +98,8 @@ func (l *LiveRoomManager) CreateRoom(title, notice, coverUrl, anchorId string, e
 	return r, nil
 }
 
-func (l *LiveRoomManager) GetRoomList(pageSize int, pageNum int, role string) ([]*models.RoomInfo, error) {
-	ids, err := l.sa.GetRoomList(pageSize, pageNum)
+func (l *LiveRoomManager) GetRoomList(pageSize int, pageNum int, status int, role string) ([]*models.RoomInfo, error) {
+	ids, err := l.sa.GetRoomList(pageSize, pageNum, status)
 	if err != nil {
 		return nil, err
 	}

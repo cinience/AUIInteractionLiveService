@@ -68,9 +68,14 @@ func (h *RoomHandler) Create(w http.ResponseWriter, r *http.Request) {
 }
 
 type ListRequest struct {
-	PageSize int    `json:"page_size" binding:"required" example:"10"`
-	PageNum  int    `json:"page_num"  binding:"required" example:"1"`
-	UserId   string `json:"user_id" binding:"required"`
+	// PageSize
+	PageSize int `json:"page_size" binding:"required" example:"10"`
+	// PageNum
+	PageNum int `json:"page_num"  binding:"required" example:"1"`
+	// 用户id
+	UserId string `json:"user_id" binding:"required"`
+	// 直播状态，不传为默认值-1 ，代表所有类型；0-准备中，1-已开始，2-已结束
+	Status *int `json:"status"`
 }
 
 // List
@@ -98,16 +103,24 @@ func (h *RoomHandler) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rst, err = h.lm.GetRoomList(in.PageSize, in.PageNum, in.UserId)
+	status := models.LiveStatusAll
+	if in.Status != nil {
+		status = *in.Status
+	}
+
+	rst, err = h.lm.GetRoomList(in.PageSize, in.PageNum, status, in.UserId)
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		rst = &models.Status{Code: http.StatusInternalServerError, Message: err.Error()}
 	}
+
 	render.DefaultResponder(w, r, rst)
 }
 
 type GetRequest struct {
-	Id     string `json:"id" binding:"required" example:"uuid，直播房间id"`
+	// 直播Id
+	Id string `json:"id" binding:"required" example:"uuid，直播房间id"`
+	// 用户Id
 	UserId string `json:"user_id" binding:"required" example:"当前用户id"`
 }
 
@@ -146,6 +159,7 @@ func (h *RoomHandler) Get(w http.ResponseWriter, r *http.Request) {
 }
 
 type UpdateRequest struct {
+	// 直播Id
 	Id string `json:"id" example:"直播Id"`
 	// 直播标题
 	Title string `json:"title" example:"直播标题"`
@@ -292,7 +306,9 @@ func (h *RoomHandler) Stop(w http.ResponseWriter, r *http.Request) {
 }
 
 type DeleteRequest struct {
-	Id     string `json:"id" binding:"required" example:"uuid，直播房间id"`
+	// 直播Id
+	Id string `json:"id" binding:"required" example:"uuid，直播房间id"`
+	// 当前用户Id
 	UserId string `json:"user_id" binding:"required" example:"当前用户id"`
 }
 
@@ -330,8 +346,11 @@ func (h *RoomHandler) Delete(w http.ResponseWriter, r *http.Request) {
 }
 
 type TokenRequest struct {
-	UserId     string `json:"user_id" binding:"required" example:"用户id:foo"`
-	DeviceId   string `json:"device_id" binding:"required" example:"设备id：DEVICE-ID"`
+	// 用户Id
+	UserId string `json:"user_id" binding:"required" example:"用户id:foo"`
+	// 设备Id
+	DeviceId string `json:"device_id" binding:"required" example:"设备id：DEVICE-ID"`
+	// 设备类型：android/ios/web/win/mac ,H5接入请一定用web
 	DeviceType string `json:"device_type" binding:"required" example:"设备类型：android/ios/web/win/mac"`
 }
 

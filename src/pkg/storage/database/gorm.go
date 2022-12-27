@@ -45,12 +45,19 @@ func (g *GormDb) CreateRoom(r *models.RoomInfo) error {
 	return rst.Error
 }
 
-func (g *GormDb) GetRoomList(pageSize int, pageNum int) ([]string, error) {
+func (g *GormDb) GetRoomList(pageSize int, pageNum int, status int) ([]string, error) {
 	offset := (pageNum - 1) * pageSize
 	var rooms []models.RoomInfo
-	if err := g.db.Order("created_at desc").Limit(pageSize).Offset(offset).Find(&rooms).Error; err != nil {
+
+	var conds []interface{}
+	if status != -1 {
+		conds = append(conds, "status = ?", status)
+	}
+
+	if err := g.db.Order("created_at desc").Limit(pageSize).Offset(offset).Find(&rooms, conds).Error; err != nil {
 		return nil, fmt.Errorf("limit failed. %w", err)
 	}
+
 	var ids []string
 	for _, item := range rooms {
 		ids = append(ids, item.ID)
