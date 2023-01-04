@@ -102,9 +102,12 @@ type LinkInfo struct {
 
 // PushLiveInfo 推流信息
 type PushLiveInfo struct {
+	// RTMP协议地址
 	RtmpUrl string `json:"rtmp_url"`
-	RtsUrl  string `json:"rts_url"`
-	SrtUrl  string `json:"srt_url"`
+	// RTS协议地址
+	RtsUrl string `json:"rts_url"`
+	// SRT协议地址
+	SrtUrl string `json:"srt_url"`
 }
 
 type Status struct {
@@ -117,18 +120,18 @@ const (
 	// LiveStatusAll -1 所有状态
 	LiveStatusAll = -1
 	// LiveStatusPrepare 0 准备中
-	LiveStatusPrepare = iota
+	LiveStatusPrepare = 0
 	// LiveStatusOn 1 已开始
-	LiveStatusOn
+	LiveStatusOn = 1
 	// LiveStatusOff 2 已结束
-	LiveStatusOff
+	LiveStatusOff = 2
 )
 
 const (
 	// LiveModeNormal 0 常规模式
-	LiveModeNormal = iota
+	LiveModeNormal = 0
 	// LiveModeLink 1 连麦模式
-	LiveModeLink
-	// LiveModePk 2 pk模式
-	LiveModePk
+	LiveModeLink = 1
+	// LiveModePk 2 pk模式,暂未实现
+	LiveModePk = 2
 )

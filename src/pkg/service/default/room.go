@@ -243,7 +243,7 @@ func (l *LiveRoomManager) GetRoom(id string, userId string) (*models.RoomInfo, e
 
 	r.VodInfo, err = l.getVodInfo(r)
 	if err != nil {
-		return nil, err
+		fmt.Printf("[WARN] getVodInfo failed. err:%v \n", err)
 	}
 
 	imService, err := im.NewLiveIMService(l.appConfig)
@@ -253,19 +253,19 @@ func (l *LiveRoomManager) GetRoom(id string, userId string) (*models.RoomInfo, e
 
 	details, err := imService.GetGroupDetails(r.ChatId, userId)
 	if err != nil {
-		return nil, err
-	}
+		fmt.Printf("[WARN] GetGroupDetails failed. err:%v \n", err)
+	} else {
+		r.Metrics = &models.Metrics{
+			OnlineCount: uint64(details.OnlineCount),
+			LikeCount:   uint64(details.LikeCount),
+			Pv:          uint64(details.PV),
+			Uv:          uint64(details.UV),
+		}
 
-	r.Metrics = &models.Metrics{
-		OnlineCount: uint64(details.OnlineCount),
-		LikeCount:   uint64(details.LikeCount),
-		Pv:          uint64(details.PV),
-		Uv:          uint64(details.UV),
-	}
-
-	r.UserStatus = &models.UserStatus{
-		Mute:       details.IsMute,
-		MuteSource: details.MuteBy,
+		r.UserStatus = &models.UserStatus{
+			Mute:       details.IsMute,
+			MuteSource: details.MuteBy,
+		}
 	}
 
 	return r, nil
