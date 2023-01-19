@@ -170,7 +170,7 @@ func (l *LiveRoomManager) PauseLive(id string, role string) (*models.RoomInfo, e
 	if err != nil {
 		return nil, err
 	}
-	record.Status = models.LiveStatusPrepare
+	record.Status = models.LiveStatusPause
 	err = l.sa.UpdateRoom(id, record)
 	if err != nil {
 		return nil, err

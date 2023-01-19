@@ -125,6 +125,8 @@ const (
 	LiveStatusOn = 1
 	// LiveStatusOff 2 已结束
 	LiveStatusOff = 2
+	// LiveStatusPause 3 暂停状态(主播暂时离开，推流失败也为该状态)
+	LiveStatusPause = 3
 )
 
 const (

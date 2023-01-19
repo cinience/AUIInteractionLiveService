@@ -36,8 +36,8 @@ type GatewayConfig struct {
 
 func LoadNacosConfig(address string) (*AppConfig, error) {
 	clientConfig := *constant.NewClientConfig(
-		constant.WithLogDir("/tmp/"),
-		constant.WithCacheDir("/tmp/"),
+		constant.WithLogDir("/tmp"),
+		constant.WithCacheDir("/tmp"),
 	)
 
 	if err := microconfig.Load(nacos.NewSource(
