@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"ApsaraLive/pkg/utils"
 	"net/http"
 	"strings"
 
@@ -39,7 +40,7 @@ func (h *RoomHandler) UpdateMeetingInfo(w http.ResponseWriter, r *http.Request) 
 	if err != nil {
 		render.Status(r, http.StatusBadRequest)
 		rst = &models.Status{Code: http.StatusBadRequest, Message: err.Error()}
-		render.DefaultResponder(w, r, rst)
+		utils.DefaultResponder(w, r, rst)
 		return
 	}
 
@@ -48,7 +49,7 @@ func (h *RoomHandler) UpdateMeetingInfo(w http.ResponseWriter, r *http.Request) 
 		render.Status(r, http.StatusInternalServerError)
 		rst = &models.Status{Code: http.StatusInternalServerError, Message: err.Error()}
 	}
-	render.DefaultResponder(w, r, rst)
+	utils.DefaultResponder(w, r, rst)
 }
 
 // GetMeetingInfo
@@ -72,7 +73,7 @@ func (h *RoomHandler) GetMeetingInfo(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		render.Status(r, http.StatusBadRequest)
 		rst = &models.Status{Code: http.StatusBadRequest, Message: err.Error()}
-		render.DefaultResponder(w, r, rst)
+		utils.DefaultResponder(w, r, rst)
 		return
 	}
 
@@ -81,5 +82,6 @@ func (h *RoomHandler) GetMeetingInfo(w http.ResponseWriter, r *http.Request) {
 		render.Status(r, http.StatusInternalServerError)
 		rst = &models.Status{Code: http.StatusInternalServerError, Message: err.Error()}
 	}
-	render.DefaultResponder(w, r, rst)
+
+	utils.DefaultResponder(w, r, rst)
 }

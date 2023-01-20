@@ -13,20 +13,20 @@ import (
 )
 
 type VodService struct {
-	openAPIConfig *config.OpenAPIConfig
+	vodConfig *config.VodConfig
 }
 
-func NewVodService(config *config.OpenAPIConfig) *VodService {
-	return &VodService{openAPIConfig: config}
+func NewVodService(config *config.VodConfig) *VodService {
+	return &VodService{vodConfig: config}
 }
 
 func (v *VodService) CreateClient() (_result *vod20170321.Client, _err error) {
 	config := &openapi.Config{
-		AccessKeyId:     &v.openAPIConfig.AccessKeyId,
-		AccessKeySecret: &v.openAPIConfig.AccessKeySecret,
-		SecurityToken:   &v.openAPIConfig.StsToken,
+		AccessKeyId:     &v.vodConfig.AccessKeyId,
+		AccessKeySecret: &v.vodConfig.AccessKeySecret,
+		SecurityToken:   &v.vodConfig.StsToken,
 	}
-	config.Endpoint = tea.String(fmt.Sprintf("vod.%s.aliyuncs.com", v.openAPIConfig.Region))
+	config.Endpoint = tea.String(fmt.Sprintf("vod.%s.aliyuncs.com", v.vodConfig.Region))
 	_result = &vod20170321.Client{}
 	_result, _err = vod20170321.NewClient(config)
 	return _result, _err
@@ -76,7 +76,7 @@ func (v *VodService) GetVodPlayInfo(id string) (*models.VodInfo, error) {
 	}
 
 	log.Printf("GetVodPlayInfo id:%s, rst:%v", id, rst)
-	
+
 	if rst.Body == nil || rst.Body.PlayInfoList == nil || len(rst.Body.PlayInfoList.PlayInfo) == 0 {
 		return nil, fmt.Errorf("get playinfo failed. rst:%v", rst)
 	}

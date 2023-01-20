@@ -1,7 +1,7 @@
 package config
 
 type LiveStreamConfig struct {
-	Scheme string `json:"scheme"`
+	Scheme string `json:"scheme" mapstructure:"scheme"`
 	// 推流地址
 	PushUrl string `json:"push_url" mapstructure:"push_url"`
 	// 拉流地址

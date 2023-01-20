@@ -26,7 +26,7 @@ type LiveRoomManager struct {
 
 func NewLiveRoomManager(sa storage.StorageAPI, imSvr *im.LiveIMService, appConfig *config.AppConfig) *LiveRoomManager {
 	l := &LiveRoomManager{sa: sa, appConfig: appConfig, imService: imSvr}
-	l.vodService = vod.NewVodService(&appConfig.OpenAPIConfig)
+	l.vodService = vod.NewVodService(&appConfig.VodConfig)
 	return l
 }
 
@@ -98,10 +98,10 @@ func (l *LiveRoomManager) CreateRoom(title, notice, coverUrl, anchorId string, e
 	return r, nil
 }
 
-func (l *LiveRoomManager) GetRoomList(pageSize int, pageNum int, status int, role string) ([]*models.RoomInfo, error) {
-	ids, err := l.sa.GetRoomList(pageSize, pageNum, status)
+func (l *LiveRoomManager) GetRoomList(pageSize int, pageNum int, status int, role string) (int64, []*models.RoomInfo, error) {
+	totalCount, ids, err := l.sa.GetRoomList(pageSize, pageNum, status)
 	if err != nil {
-		return nil, err
+		return totalCount, nil, err
 	}
 
 	roomList := make([]*models.RoomInfo, len(ids))
@@ -121,10 +121,10 @@ func (l *LiveRoomManager) GetRoomList(pageSize int, pageNum int, status int, rol
 
 	err = g.Wait()
 	if err != nil {
-		return nil, err
+		return totalCount, nil, err
 	}
 
-	return roomList, nil
+	return totalCount, roomList, nil
 }
 
 func (l *LiveRoomManager) UpdateRoom(id string, title, notice, extends string) (*models.RoomInfo, error) {
@@ -334,7 +334,7 @@ func (l *LiveRoomManager) getRtcInfo(meetingId, userId string, anchorId string, 
 }
 
 func (l *LiveRoomManager) getVodInfo(r *models.RoomInfo) (*models.VodInfo, error) {
-	if r.Status != models.LiveStatusOff {
+	if !l.appConfig.VodConfig.Enabled || r.Status != models.LiveStatusOff {
 		return nil, nil
 	}
 

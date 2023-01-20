@@ -22,9 +22,11 @@ func (m *MockDb) CreateRoom(r *models.RoomInfo) error {
 	return m.UpdateRoom(r.ChatId, r)
 }
 
-func (m *MockDb) GetRoomList(pageSize int, pageNum int, status int) ([]string, error) {
+func (m *MockDb) GetRoomList(pageSize int, pageNum int, status int) (int64, []string, error) {
+	// 无分页支持
+	totalCount := int64(1000)
 	ids, err := m.imSvr.ListMessageGroup(pageSize, pageNum)
-	return ids, err
+	return totalCount, ids, err
 }
 
 func (m *MockDb) GetRoom(id string) (*models.RoomInfo, error) {

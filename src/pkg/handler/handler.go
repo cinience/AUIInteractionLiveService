@@ -6,6 +6,7 @@ import (
 
 	"ApsaraLive/pkg/models"
 	"ApsaraLive/pkg/service"
+	"ApsaraLive/pkg/utils"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-chi/render"
 )
@@ -56,7 +57,7 @@ func (h *RoomHandler) Create(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		render.Status(r, http.StatusBadRequest)
 		rst = &models.Status{Code: http.StatusBadRequest, Message: err.Error()}
-		render.DefaultResponder(w, r, rst)
+		utils.DefaultResponder(w, r, rst)
 		return
 	}
 	rst, err = h.lm.CreateRoom(in.Title, in.Notice, in.CoverUrl, in.Anchor, in.Extends, in.Mode)
@@ -64,7 +65,7 @@ func (h *RoomHandler) Create(w http.ResponseWriter, r *http.Request) {
 		render.Status(r, http.StatusInternalServerError)
 		rst = &models.Status{Code: http.StatusInternalServerError, Message: err.Error()}
 	}
-	render.DefaultResponder(w, r, rst)
+	utils.DefaultResponder(w, r, rst)
 }
 
 type ListRequest struct {
@@ -78,6 +79,13 @@ type ListRequest struct {
 	Status *int `json:"status"`
 }
 
+type ListResponse struct {
+	// PageSize
+	LiveList []*models.RoomInfo `json:"live_list"`
+	// PageNum
+	TotalCount int64 `json:"total_count"  example:"1000"`
+}
+
 // List
 // @Summary 获取直播房间列表
 // @Description 获取直播房间列表
@@ -87,7 +95,7 @@ type ListRequest struct {
 // @Security ApiKeyAuth
 // @param   Authorization header string true "Bearer your-token"
 // @Param   request      body handler.ListRequest true "请求参数"
-// @Success 200 {object} []models.RoomInfo	"ok"
+// @Success 200 {object} handler.ListResponse	"ok"
 // @Failure 400 {object} models.Status	"4xx, 客户端错误"
 // @Failure 500 {object} models.Status	"5xx, 请求失败"
 // @Router /list [post]
@@ -99,7 +107,7 @@ func (h *RoomHandler) List(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		render.Status(r, http.StatusBadRequest)
 		rst = &models.Status{Code: http.StatusBadRequest, Message: err.Error()}
-		render.DefaultResponder(w, r, rst)
+		utils.DefaultResponder(w, r, rst)
 		return
 	}
 
@@ -108,13 +116,17 @@ func (h *RoomHandler) List(w http.ResponseWriter, r *http.Request) {
 		status = *in.Status
 	}
 
-	rst, err = h.lm.GetRoomList(in.PageSize, in.PageNum, status, in.UserId)
+	totalCount, roomList, err := h.lm.GetRoomList(in.PageSize, in.PageNum, status, in.UserId)
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		rst = &models.Status{Code: http.StatusInternalServerError, Message: err.Error()}
+	} else {
+		rst = &ListResponse{
+			LiveList:   roomList,
+			TotalCount: totalCount,
+		}
 	}
-
-	render.DefaultResponder(w, r, rst)
+	utils.DefaultResponder(w, r, rst)
 }
 
 type GetRequest struct {
@@ -145,7 +157,7 @@ func (h *RoomHandler) Get(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		render.Status(r, http.StatusBadRequest)
 		rst = &models.Status{Code: http.StatusBadRequest, Message: err.Error()}
-		render.DefaultResponder(w, r, rst)
+		utils.DefaultResponder(w, r, rst)
 		return
 	}
 
@@ -155,7 +167,7 @@ func (h *RoomHandler) Get(w http.ResponseWriter, r *http.Request) {
 		rst = &models.Status{Code: http.StatusInternalServerError, Message: err.Error()}
 	}
 
-	render.DefaultResponder(w, r, rst)
+	utils.DefaultResponder(w, r, rst)
 }
 
 type UpdateRequest struct {
@@ -190,7 +202,7 @@ func (h *RoomHandler) Update(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		render.Status(r, http.StatusBadRequest)
 		rst = &models.Status{Code: http.StatusBadRequest, Message: err.Error()}
-		render.DefaultResponder(w, r, rst)
+		utils.DefaultResponder(w, r, rst)
 		return
 	}
 	rst, err = h.lm.UpdateRoom(in.Id, in.Title, in.Notice, in.Extends)
@@ -198,7 +210,8 @@ func (h *RoomHandler) Update(w http.ResponseWriter, r *http.Request) {
 		render.Status(r, http.StatusInternalServerError)
 		rst = &models.Status{Code: http.StatusInternalServerError, Message: err.Error()}
 	}
-	render.DefaultResponder(w, r, rst)
+
+	utils.DefaultResponder(w, r, rst)
 }
 
 type LiveStatusRequest struct {
@@ -227,7 +240,7 @@ func (h *RoomHandler) Start(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		render.Status(r, http.StatusBadRequest)
 		rst = &models.Status{Code: http.StatusBadRequest, Message: err.Error()}
-		render.DefaultResponder(w, r, rst)
+		utils.DefaultResponder(w, r, rst)
 		return
 	}
 
@@ -236,7 +249,8 @@ func (h *RoomHandler) Start(w http.ResponseWriter, r *http.Request) {
 		render.Status(r, http.StatusInternalServerError)
 		rst = &models.Status{Code: http.StatusInternalServerError, Message: err.Error()}
 	}
-	render.DefaultResponder(w, r, rst)
+
+	utils.DefaultResponder(w, r, rst)
 }
 
 // Pause
@@ -260,7 +274,7 @@ func (h *RoomHandler) Pause(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		render.Status(r, http.StatusBadRequest)
 		rst = &models.Status{Code: http.StatusBadRequest, Message: err.Error()}
-		render.DefaultResponder(w, r, rst)
+		utils.DefaultResponder(w, r, rst)
 		return
 	}
 
@@ -269,7 +283,8 @@ func (h *RoomHandler) Pause(w http.ResponseWriter, r *http.Request) {
 		render.Status(r, http.StatusInternalServerError)
 		rst = &models.Status{Code: http.StatusInternalServerError, Message: err.Error()}
 	}
-	render.DefaultResponder(w, r, rst)
+
+	utils.DefaultResponder(w, r, rst)
 }
 
 // Stop
@@ -293,7 +308,7 @@ func (h *RoomHandler) Stop(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		render.Status(r, http.StatusBadRequest)
 		rst = &models.Status{Code: http.StatusBadRequest, Message: err.Error()}
-		render.DefaultResponder(w, r, rst)
+		utils.DefaultResponder(w, r, rst)
 		return
 	}
 
@@ -302,7 +317,8 @@ func (h *RoomHandler) Stop(w http.ResponseWriter, r *http.Request) {
 		render.Status(r, http.StatusInternalServerError)
 		rst = &models.Status{Code: http.StatusInternalServerError, Message: err.Error()}
 	}
-	render.DefaultResponder(w, r, rst)
+
+	utils.DefaultResponder(w, r, rst)
 }
 
 type DeleteRequest struct {
@@ -333,7 +349,7 @@ func (h *RoomHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		render.Status(r, http.StatusBadRequest)
 		rst = &models.Status{Code: http.StatusBadRequest, Message: err.Error()}
-		render.DefaultResponder(w, r, rst)
+		utils.DefaultResponder(w, r, rst)
 		return
 	}
 
@@ -342,7 +358,7 @@ func (h *RoomHandler) Delete(w http.ResponseWriter, r *http.Request) {
 		render.Status(r, http.StatusInternalServerError)
 		rst = &models.Status{Code: http.StatusInternalServerError, Message: err.Error()}
 	}
-	render.DefaultResponder(w, r, rst)
+	utils.DefaultResponder(w, r, rst)
 }
 
 type TokenRequest struct {
@@ -381,7 +397,7 @@ func (h *RoomHandler) GetToken(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		render.Status(r, http.StatusBadRequest)
 		rst = &models.Status{Code: http.StatusBadRequest, Message: err.Error()}
-		render.DefaultResponder(w, r, rst)
+		utils.DefaultResponder(w, r, rst)
 		return
 	}
 
@@ -394,5 +410,5 @@ func (h *RoomHandler) GetToken(w http.ResponseWriter, r *http.Request) {
 		rst = &models.Status{Code: http.StatusInternalServerError, Message: err.Error()}
 	}
 
-	render.DefaultResponder(w, r, rst)
+	utils.DefaultResponder(w, r, rst)
 }

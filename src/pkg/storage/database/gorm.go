@@ -63,10 +63,17 @@ func (g *GormDb) CreateRoom(r *models.RoomInfo) error {
 	return rst.Error
 }
 
-func (g *GormDb) GetRoomList(pageSize int, pageNum int, status int) ([]string, error) {
+func (g *GormDb) GetRoomList(pageSize int, pageNum int, status int) (int64, []string, error) {
 	offset := (pageNum - 1) * pageSize
 	var rooms []models.RoomInfo
 	var err error
+
+	var totalCount int64
+	if status != models.LiveStatusAll {
+		err = g.GetDB().Where("status = ?", status).Model(&models.RoomInfo{}).Count(&totalCount).Error
+	} else {
+		err = g.GetDB().Model(&models.RoomInfo{}).Count(&totalCount).Error
+	}
 
 	if status != models.LiveStatusAll {
 		err = g.GetDB().Order("created_at desc").Limit(pageSize).Offset(offset).Where("status = ?", status).Find(&rooms).Error
@@ -75,7 +82,7 @@ func (g *GormDb) GetRoomList(pageSize int, pageNum int, status int) ([]string, e
 	}
 
 	if err != nil {
-		return nil, fmt.Errorf("list data failed. err: %w", err)
+		return totalCount, nil, fmt.Errorf("list data failed. err: %w", err)
 	}
 
 	var ids []string
@@ -83,7 +90,7 @@ func (g *GormDb) GetRoomList(pageSize int, pageNum int, status int) ([]string, e
 		ids = append(ids, item.ID)
 	}
 
-	return ids, nil
+	return totalCount, ids, nil
 }
 
 func (g *GormDb) GetRoom(id string) (*models.RoomInfo, error) {

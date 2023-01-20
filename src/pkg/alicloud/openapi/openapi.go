@@ -3,10 +3,10 @@ package openapi
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 
 	"ApsaraLive/pkg/config"
+	"ApsaraLive/pkg/utils"
 	"github.com/aliyun/alibaba-cloud-sdk-go/sdk"
 	"github.com/aliyun/alibaba-cloud-sdk-go/sdk/auth/credentials"
 	sdkerr "github.com/aliyun/alibaba-cloud-sdk-go/sdk/errors"
@@ -94,7 +94,7 @@ func (t *LiveAPIService) DoRequest(config *config.OpenAPIConfig, changeKeyStyle 
 
 	var m map[string]interface{}
 	defer func() {
-		log.Printf("openapi name:%s request:%v, responses:%v", name, request.QueryParams, m)
+		//log.Printf("openapi name:%s request:%v, responses:%v", name, request.QueryParams, m)
 	}()
 	resp, err := client.ProcessCommonRequest(request)
 	if err != nil {
@@ -117,30 +117,9 @@ func (t *LiveAPIService) DoRequest(config *config.OpenAPIConfig, changeKeyStyle 
 	return resp.GetHttpStatus(), m, nil
 }
 
-func DeepCopy(value interface{}, changeKeyStyleFunc func(k string) string) interface{} {
-	if valueMap, ok := value.(map[string]interface{}); ok {
-		newMap := make(map[string]interface{})
-		for k, v := range valueMap {
-			newKey := changeKeyStyleFunc(k)
-			newMap[newKey] = DeepCopy(v, changeKeyStyleFunc)
-		}
-
-		return newMap
-	} else if valueSlice, ok := value.([]interface{}); ok {
-		newSlice := make([]interface{}, len(valueSlice))
-		for k, v := range valueSlice {
-			newSlice[k] = DeepCopy(v, changeKeyStyleFunc)
-		}
-
-		return newSlice
-	}
-
-	return value
-}
-
 // Encode 将map转换为大坨峰Key风格json字符串
 func (t *LiveAPIService) Encode(changeKeyStyle bool, data map[string]interface{}) (string, error) {
-	rst, err := json.Marshal(DeepCopy(data, func(k string) string {
+	rst, err := json.Marshal(utils.DeepCopy(data, func(k string) string {
 		if changeKeyStyle {
 			return strcase.ToCamel(k)
 		}
@@ -160,7 +139,7 @@ func (t *LiveAPIService) Decode(changeKeyStyle bool, data string) (map[string]in
 		return nil, err
 	}
 
-	out := DeepCopy(m, func(k string) string {
+	out := utils.DeepCopy(m, func(k string) string {
 		if changeKeyStyle {
 			return strcase.ToLowerCamel(k)
 		}

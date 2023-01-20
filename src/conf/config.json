@@ -31,5 +31,8 @@
         "enable": false,
         "ws_addr": "wss://example.com:443/ws",
         "lwp_addr": "tls://127.0.0.1:443"
+    },
+    "vod": {
+        "enable": false
     }
 }

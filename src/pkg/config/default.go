@@ -23,6 +23,7 @@ type AppConfig struct {
 	LiveStreamConfig LiveStreamConfig `json:"live_stream" mapstructure:"live_stream"`
 	LiveMicConfig    LiveMicConfig    `json:"live_mic" mapstructure:"live_mic"`
 	LiveIMConfig     LiveIMConfig     `json:"live_im" mapstructure:"live_im"`
+	VodConfig        VodConfig        `json:"vod" mapstructure:"vod"`
 	OpenAPIConfig    OpenAPIConfig    `json:"openapi" mapstructure:"openapi"`
 	StorageConfig    StorageConfig    `json:"storage" mapstructure:"storage"`
 	GatewayConfig    GatewayConfig    `json:"gateway" mapstructure:"gateway"`
@@ -56,9 +57,10 @@ func LoadNacosConfig(address string) (*AppConfig, error) {
 }
 
 func LoadConfig() (*AppConfig, error) {
-	viper.SetConfigName("config") // name of config file (without extension)
-	viper.AddConfigPath("./conf") // path to look for the config file in
-	viper.AddConfigPath(".")      // optionally look for config in the working directory
+	viper.SetConfigName("config")          // name of config file (without extension)
+	viper.AddConfigPath(os.Getenv("HOME")) // path to look for the config file in
+	viper.AddConfigPath(".")               // optionally look for config in the working directory
+	viper.AddConfigPath("./conf")          // path to look for the config file in
 
 	address := os.Getenv(NacosAddrEnvName)
 	if address != "" {
@@ -81,5 +83,9 @@ func LoadConfig() (*AppConfig, error) {
 		return nil, err
 	}
 
+	// 如果未单独配置vod的ak配置，则复用直播的ak sk配置
+	if appConfig.VodConfig.Enabled && appConfig.VodConfig.AccessKeyId == "" {
+		appConfig.VodConfig.OpenAPIConfig = appConfig.OpenAPIConfig
+	}
 	return &appConfig, nil
 }

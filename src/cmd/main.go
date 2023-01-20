@@ -1,6 +1,7 @@
 package main
 
 import (
+	"ApsaraLive/pkg/utils"
 	"fmt"
 	"log"
 	"net/http"
@@ -47,7 +48,7 @@ func runServer() {
 	if err != nil {
 		panic(err)
 	}
-
+	log.Println(appConfig)
 	r := gin.Default()
 
 	// 允许Web sdk跨域接入
@@ -102,20 +103,21 @@ func runServer() {
 	v1 := r.Group("/api/v1")
 	{
 		// 演示开启token拦截，实际生产使用请保证开启
-		v1.Use(authMiddleware.MiddlewareFunc())
+		//v1.Use(authMiddleware.MiddlewareFunc())
 		live := v1.Group("/live")
 
 		// 如果是在FC环境，自动更新sts token
 		live.Use(func() gin.HandlerFunc {
-			return func(ctx *gin.Context) {
-				header := ctx.Request.Header
+			return func(c *gin.Context) {
+				header := c.Request.Header
 				if header.Get(XHeaderAk) != "" {
 					appConfig.OpenAPIConfig.RefreshToken(header.Get(XHeaderAk),
 						header.Get(XHeaderSk),
 						header.Get(XHeaderStsToken),
 					)
 				}
-				ctx.Next()
+				utils.DefaultRequester(c.Request)
+				c.Next()
 			}
 		}())
 		{
@@ -132,6 +134,15 @@ func runServer() {
 			live.POST("/updateMeetingInfo", gin.WrapF(h.UpdateMeetingInfo))
 			live.POST("/getMeetingInfo", gin.WrapF(h.GetMeetingInfo))
 		}
+	}
+
+	console := r.Group("/console/v1")
+	{
+		managerHandler := handler.NewManagerHandler()
+		console.POST("/userLogin", gin.WrapF(managerHandler.Login))
+		console.POST("/getUserInfo", gin.WrapF(managerHandler.GetUserInfo))
+		console.POST("/:action", gin.WrapF(managerHandler.GetUserInfo))
+
 	}
 
 	// Swagger功能
