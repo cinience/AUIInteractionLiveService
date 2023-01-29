@@ -686,6 +686,10 @@ export default {
       if (!url || typeof url !== 'string') return;
       return url.replace(/^http:\/\//i, 'https://');
     },
+    replaceHttp(url) {
+      if (!url || typeof url !== 'string') return;
+      return url.replace(/^https:\/\//i, 'http://');
+    },
     async startPlayback() {
       try {
         this.liveService.stopPlay();
@@ -705,7 +709,7 @@ export default {
             source:
               currentProtocol === 'https'
                 ? this.replaceHttps(liveDetail.vodInfo.playUrl)
-                : liveDetail.vodInfo.playUrl,
+                : this.replaceHttps(liveDetail.vodInfo.playUrl),
             aliplayerSdkVer: '2.9.14',
           });
           await this.liveService.livePlayerManager.createPlayer(
@@ -718,6 +722,7 @@ export default {
           );
         }
       } catch (err) {
+        console.log(err)
         this.$message.error('开始回放时出错');
       }
     },

@@ -103,7 +103,7 @@ func runServer() {
 	v1 := r.Group("/api/v1")
 	{
 		// 演示开启token拦截，实际生产使用请保证开启
-		//v1.Use(authMiddleware.MiddlewareFunc())
+		v1.Use(authMiddleware.MiddlewareFunc())
 		live := v1.Group("/live")
 
 		// 如果是在FC环境，自动更新sts token
