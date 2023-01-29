@@ -9,6 +9,9 @@ function setInterceptors (axiosInstance) {
     // 让服务端默认风格为小驼峰
     req.headers['x-key-style'] = 'LowerCamel'
 
+    if (localStorage.getItem('appId')){
+      req.headers['Authorization'] = 'Bearer ' + localStorage.getItem('loginToken')
+    }
     if (process.env.NODE_ENV !== 'production') {
       console.time(req.method.toUpperCase() + ' ' + '/api' + req.url)
     }
@@ -20,9 +23,10 @@ function setInterceptors (axiosInstance) {
 
   // response interceptor
   axiosInstance.interceptors.response.use(res => {
-    console.log(res.code, '=code');
-    if(res.config.url.search('userLogin') > 0 && !localStorage.getItem('appId')){
-      localStorage.setItem('appId',res.headers['x-app-id'])
+    if(res.config.url.search('login') > 0) {
+      console.log("##################################")
+      localStorage.setItem('appId', 'admin')
+      localStorage.setItem('loginToken', res.data.token)
     }
     if (process.env.NODE_ENV !== 'production') {
       console.timeEnd(res.config.method.toUpperCase() + ' ' + res.config.url)

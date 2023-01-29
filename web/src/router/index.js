@@ -11,6 +11,10 @@ router.beforeEach((to, from, next) => {
   let auth = to.meta.auth
   let isLogin = localStorage.getItem('appId')
   if (auth && !isLogin) {
+    console.log('************')
+    console.log(auth)
+    console.log(isLogin)
+
     Vue.prototype.$message.info('尚未登录')
     return next({ name: 'login' })
   }

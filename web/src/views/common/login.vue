@@ -48,11 +48,11 @@ export default {
       this.$store.commit('USER_NICK', this.form.userNick)
       console.log(this.$store.getters.userNick);
       liveApi.login({
-        accountId: 'admin',
+        username: 'admin',
         password: this.form.passWord
       }).then(res => {
-        console.log(res, '登录成功', res.data.scene)
-        this.$router.push({ path: `/${res.data.scene}/liveList` })
+        console.log(res, '登录成功', res.data)
+        this.$router.push({ path: `/live/liveList` })
         liveApi.getUserInfo({ userId: 'admin' }).then(res => {
           console.log(res, '=userInfo');
           this.$store.commit('APP_ID', res.data.appId)

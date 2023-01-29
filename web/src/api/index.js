@@ -3,11 +3,11 @@ window.api = api
 
 export const liveApi = {
   login({
-    accountId,
+    username,
     password
   } = {}) {
-    return api.post('/console/v1/userLogin', {
-      accountId,
+    return api.post('/api/v1/live/login', {
+      username,
       password
     })
   },

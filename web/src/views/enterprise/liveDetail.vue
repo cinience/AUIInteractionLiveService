@@ -256,6 +256,7 @@ export default {
       return liveApi.getLiveRoom({ id: this.liveId }).then(res => {
         this.liveDetail = res.data
         this.playing = this.liveDetail.status === 1
+        console.log(this.playing, 'xxxxx')
         this.countTime = this.liveDetail.status === 1
           ? +new Date() - this.liveDetail.startTime : this.liveDetail.endTime - this.liveDetail.startTime
         return res.data.result
